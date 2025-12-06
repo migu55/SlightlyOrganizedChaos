@@ -74,6 +74,8 @@ public class MissionBehavior : MonoBehaviour
 
     public void createMission(MissionData mDetails)
     {
+        if (activeMissions.FirstOrDefault(o => o.id == mDetails.id) != null) return;
+
         MissionData mData;
 
         if (mDetails == null)
@@ -195,7 +197,6 @@ public class MissionBehavior : MonoBehaviour
                 {
                     if (mission.MissionQuantities[i] > submittedArray[i])
                     {
-                        Debug.Log("Fail State");
                         failure = true;
                     }
                 }
@@ -205,11 +206,14 @@ public class MissionBehavior : MonoBehaviour
             {
                 GameStats.Instance.gameBalance += mission.reward;
                 GameStats.Instance.roundMissionPasses++;
-                Debug.Log("Success State");
+                SFXController.Instance.PlayClip(SFXController.Instance.missionComplete);
             }
             else
             {
-                GameStats.Instance.roundMissionFails++;
+                if (playAnimation)
+                {
+                    SFXController.Instance.PlayClip(SFXController.Instance.missionFailed);
+                }               
             }
 
             if (playAnimation)
@@ -298,7 +302,7 @@ public class MissionBehavior : MonoBehaviour
         Debug.Log("Round Start");
         roundActive = true;
         rgtr.RoundStatusRoundStart();
-        Debug.Log("SFX Play Start Whistle");
+        SFXController.Instance.PlayClip(SFXController.Instance.roundStartJingle);
         MusicManager.Instance.PlayMusic(MusicManager.Instance.menuMusic);
         //currentMissionID = 1; //set current Mission ID for this round
         requiredAmtOfMissions = (GameStats.Instance.gameRound / 2) + 3; //set required number of Missions for this round

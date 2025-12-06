@@ -38,16 +38,12 @@ public class ClockInHandler : MonoBehaviour, Interactable
 
     void Start()
     {
-        tutorialEnabled = true;
-        GameStats.Instance.gameBalance = 999999;
-        GameStats.Instance.gameQuota = 0;
-        GameStats.Instance.gameRound = 0;
-        GameStats.Instance.gameTime = 60000;
-        
-        playersReady = new();
-        playerIndexes = new();
-        forklifts = new();
-        readyTexts = new();
+        StartCoroutine(SetupTutorial());
+    }
+
+    IEnumerator SetupTutorial()
+    {
+        yield return new WaitUntil(() => GameStats.Instance != null);
 
         mData = new()
         {
@@ -56,14 +52,27 @@ public class ClockInHandler : MonoBehaviour, Interactable
             time = 60000,
             MissionQuantities = new int[3] { Random.Range(1, 3), Random.Range(1, 3), Random.Range(1, 3) }
         };
-        missionsController.createMission(mData);
 
+        GameStats.Instance.gameBalance = 999999;
+        GameStats.Instance.gameQuota = 0;
+        GameStats.Instance.gameRound = 0;
+        GameStats.Instance.gameTime = 60000;
+
+        missionsController.createMission(mData);
     }
 
     private void Awake()
     {
+        tutorialEnabled = true;
+        playersReady = new();
+        playerIndexes = new();
+        forklifts = new();
+        readyTexts = new();
+
         rgtr = roundHandlerGO.GetComponent<RoundGameToResults>();
         ph = priceHandlerGO.GetComponent<NoahPricesHandler>();
+
+        StartCoroutine(SetupTutorial());
     }
 
     public void AddNewPlayer(GameObject player)
@@ -163,6 +172,7 @@ public class ClockInHandler : MonoBehaviour, Interactable
     {
         tutorialEnabled = false;
         GameStats.Instance.allPlayersReady = true;
+        SFXController.Instance.PlayClip(SFXController.Instance.clockInWhistle);
         ph.ResetRoundTimer();
         rgtr.RoundStatusPreRound();
 
@@ -224,10 +234,12 @@ public class ClockInHandler : MonoBehaviour, Interactable
         var textObj = readyTexts[index];
         if (playersReady[index])
         {
+            SFXController.Instance.PlayClip(SFXController.Instance.playerReady);
             textObj.text = "Ready";
             textObj.color = Color.green;
         } else
         {
+            SFXController.Instance.PlayClip(SFXController.Instance.playerUnready);
             textObj.text = "Unready";
             textObj.color = Color.red;
         }

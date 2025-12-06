@@ -178,6 +178,7 @@ public class ProductOrderingMenu : MonoBehaviour
         // Clear the persistent basket after sending, and subtract price from budget.
         orderBasket.Clear();
         GameStats.Instance.gameBalance -= totalPrice; totalPrice = 0;
+        SFXController.Instance.PlayClip(SFXController.Instance.orderPlaced);
         Debug.Log("ProductOrderingMenu.PlaceOrder: Cleared order basket after sending.");
     }
 }

@@ -28,6 +28,7 @@ public class PlayerTracker : MonoBehaviour
             {
                 players.Add(p);
                 p.transform.SetPositionAndRotation(spawns[players.IndexOf(p)].position, spawns[players.IndexOf(p)].rotation);
+                readySystem = GameObject.FindGameObjectWithTag("ClockInButton").GetComponent<ClockInHandler>();
                 readySystem.AddNewPlayer(p);
 
                 var textHolder = p.GetComponentInChildren<ReadyTextHolder>();

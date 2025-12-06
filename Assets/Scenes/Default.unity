@@ -311,7 +311,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 0
-  m_Volume: 1
+  m_Volume: 0.4
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -407,15 +407,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 314b75b7e90528545a256e0efde1be56, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  randomizePitch: 0
   pitchMin: 0.95
   pitchMax: 1.05
-  roundWhistle: {fileID: 0}
-  clockInWhistle: {fileID: 0}
-  missionComplete: {fileID: 0}
-  missionFailed: {fileID: 0}
-  orderPlaced: {fileID: 0}
-  palletRecieved: {fileID: 0}
+  roundStartJingle: {fileID: 8300000, guid: 504479192882d044a86e119709c7c4cd, type: 3}
+  roundEndWhistle: {fileID: 8300000, guid: 013002e9456bf0f4b845a817811accfa, type: 3}
+  clockInWhistle: {fileID: 8300000, guid: 136a101e304c9004ea31572fda2aa50b, type: 3}
+  missionComplete: {fileID: 8300000, guid: 4146291b4a17f6d46a8e7e440dbad657, type: 3}
+  missionFailed: {fileID: 8300000, guid: 4b8ce9f3f3017ee44bfe9160edb66aae, type: 3}
+  orderPlaced: {fileID: 8300000, guid: 0d87e53720427d84fba39b7fe247fd74, type: 3}
+  palletRecieved: {fileID: 8300000, guid: 72988f7d08a20504cb1f2e909df127d5, type: 3}
+  playerReady: {fileID: 8300000, guid: 3cbce249a08c83049ae2d267df2e5aa1, type: 3}
+  playerUnready: {fileID: 8300000, guid: 25262e8b12f24304fa3ed86feb615258, type: 3}
   uiInput: {fileID: 0}
 --- !u!1 &86525193
 GameObject:
@@ -2128,7 +2130,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -25}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 450, y: 50}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1197980861
@@ -3585,7 +3587,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 155}
+  m_AnchoredPosition: {x: 0, y: 200}
   m_SizeDelta: {x: 300, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1779039558
@@ -4211,6 +4213,10 @@ PrefabInstance:
       propertyPath: tracker
       value: 
       objectReference: {fileID: 877436537}
+    - target: {fileID: 5132760460885443008, guid: d48396133b23db646af3b9dbfeb9d822, type: 3}
+      propertyPath: priceHandlerGO
+      value: 
+      objectReference: {fileID: 2089204709}
     - target: {fileID: 5132760460885443008, guid: d48396133b23db646af3b9dbfeb9d822, type: 3}
       propertyPath: roundHandlerGO
       value: 

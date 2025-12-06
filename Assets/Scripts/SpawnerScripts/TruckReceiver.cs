@@ -47,6 +47,7 @@ public class TruckReceiver : MonoBehaviour
                 Debug.Log("TruckReceiver: Absorbed pallet box counts: null or unexpected length");
 
             // update the mission UI with the new counts
+            SFXController.Instance.PlayClip(SFXController.Instance.palletRecieved);
             mb.updateMissionQuotaUI(missionId, boxArray);
         }
         else

@@ -9,6 +9,8 @@ public class WaitingTextScript : MonoBehaviour
     [SerializeField]
     GameObject missionList;
 
+    bool showText;
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -19,17 +21,29 @@ public class WaitingTextScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (GameStats.Instance.gameStarted && GameStats.Instance.gameTime < 300 && GameStats.Instance.gameTime > 90)
+        showText = true;
+
+        if (GameStats.Instance.allPlayersReady)
         {
-            if (missionList.transform.childCount > 0)
-            {
-                waitingText.SetActive(false);
-            }
-            else
-            {
-                waitingText.SetActive(true);
-            }
+            showText = false;
         }
-        
+
+        if (GameStats.Instance.inRoundScreen)
+        {
+            showText = false;
+        }
+
+        if (missionList.transform.childCount > 0)
+        {
+            showText = false;
+        }
+
+        if (GameStats.Instance.gameTime > 299 || GameStats.Instance.gameTime < 90)
+        {
+            showText = false;
+        }
+
+        waitingText.SetActive(showText);
+
     }
 }
