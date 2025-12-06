@@ -1,0 +1,12 @@
+fileFormatVersion: 2
+guid: 38e40192dd7ae61469e5d463e6a39967
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - MissionUIPrefab: {fileID: 1334690493286091594, guid: 7e9f2f494b9acd24396c254ec8209e3d, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
