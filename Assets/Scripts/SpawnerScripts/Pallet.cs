@@ -492,4 +492,26 @@ public class Pallet : MonoBehaviour
         }
         
     }
+
+    // Helper: check whether any TruckReceiver in the scene has received at least one box
+    private bool HasAtLeastOneBoxReceivedByAnyTruck()
+    {
+        // Find all TruckReceiver instances in the active scene(s)
+        TruckReceiver[] receivers = FindObjectsOfType<TruckReceiver>();
+        if (receivers == null || receivers.Length == 0)
+            return false;
+
+        foreach (var recv in receivers)
+        {
+            if (recv == null || recv.receivedPallets == null) continue;
+            foreach (var pdata in recv.receivedPallets)
+            {
+                if (pdata == null) continue;
+                if (pdata.boxDataList != null && pdata.boxDataList.Count > 0)
+                    return true;
+            }
+        }
+
+        return false;
+    }
 }

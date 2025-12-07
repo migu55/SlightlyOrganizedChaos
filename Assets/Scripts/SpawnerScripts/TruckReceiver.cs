@@ -11,6 +11,7 @@ public class TruckReceiver : MonoBehaviour
 
     // The list of received pallets (populated as pallets are absorbed)
     public List<PalletData> receivedPallets = new List<PalletData>();
+    
 
     // Optional mission identifier assigned by the TruckSpawnerManager. -1 means no mission.
     public int missionId = -1;

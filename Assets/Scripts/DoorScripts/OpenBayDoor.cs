@@ -242,12 +242,22 @@ public class OpenBayDoor : MonoBehaviour, Interactable
             // If this is a receive-mode truck (has receiver component), require receivedPallets.Count > 0
             if (receiver != null)
             {
+                // Compute total boxes received across all received pallets (require at least 1 box)
+                int totalBoxCount = 0;
+                if (receiver.receivedPallets != null)
+                {
+                    foreach (var p in receiver.receivedPallets)
+                    {
+                        if (p == null || p.boxDataList == null) continue;
+                        totalBoxCount += p.boxDataList.Count;
+                    }
+                }
                 int recCount = receiver.receivedPallets == null ? 0 : receiver.receivedPallets.Count;
-                Debug.Log($"OpenBayDoor: Processing receive-mode truck '{truck.name}': receivedPallets={recCount}, missionId={receiver.missionId}");
-                if (recCount == 0 && !forceSendEvenIfEmpty)
+                Debug.Log($"OpenBayDoor: Processing receive-mode truck '{truck.name}': receivedPallets={recCount}, totalBoxes={totalBoxCount}, missionId={receiver.missionId}");
+                if (totalBoxCount == 0 && !forceSendEvenIfEmpty)
                 {
                     SFXController.Instance.PlayClip(SFXController.Instance.errorInput);
-                    Debug.Log($"OpenBayDoor: cannot close, receive-mode truck '{truck.name}' has no received pallets.");
+                    Debug.Log($"OpenBayDoor: cannot close, receive-mode truck '{truck.name}' has no received boxes.");
                     return false; // block closing
                 }
 
