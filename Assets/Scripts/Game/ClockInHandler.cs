@@ -42,6 +42,8 @@ public class ClockInHandler : MonoBehaviour, Interactable
     {
         yield return new WaitUntil(() => GameStats.Instance != null);
 
+        MusicManager.Instance.PlayMusic(MusicManager.Instance.preroundMusic);
+
         mData = new()
         {
             id = 0,
