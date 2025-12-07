@@ -46,7 +46,7 @@ public class MissionDisplayController : MonoBehaviour
                     reqGO.SetActive(true);
                 }
 
-                string qtyText = "Product " + (char)('A' + i) + ":     ";
+                string qtyText = "Product:        ";
                 if (missionData.MissionQuantities != null && i < missionData.MissionQuantities.Length)
                     qtyText += missionData.MissionQuantities[i].ToString();
 
