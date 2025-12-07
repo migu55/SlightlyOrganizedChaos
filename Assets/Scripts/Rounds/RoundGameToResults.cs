@@ -117,10 +117,10 @@ public class RoundGameToResults : MonoBehaviour
     {
         yield return StartCoroutine(FadeScreen(true));
 
-        //if (GameStats.Instance.gameBalance < GameStats.Instance.gameQuota)
-        //{
-        //    SceneManager.LoadScene("Main Menu");
-        //}
+        if (GameStats.Instance.gameBalance < GameStats.Instance.gameQuota)
+        {
+            SceneManager.LoadScene("MainMenu");
+        }
 
         GameStats.Instance.gamePreviousRoundBalance = GameStats.Instance.gameBalance;
         GameStats.Instance.gameTime = 360;
