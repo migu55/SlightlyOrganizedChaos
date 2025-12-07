@@ -273,6 +273,7 @@ public class Pallet : MonoBehaviour
     // dont know if work, will leave here for further testing
     public void deleteBoxFromZone()
     {
+        Debug.Log("Inside Delete Box From Zone");
         if (zones == null || zones.Count == 0) return;
 
         int currIndex = 0;
@@ -297,8 +298,12 @@ public class Pallet : MonoBehaviour
             // use the pallet's boxLayerMask so we only get Box colliders (avoid returning "everything else")
             Collider[] hits = Physics.OverlapBox(center, overlapExtents, zone.transform.rotation, (int)boxLayerMask);
             bool deletedOne = false;
+            Debug.Log("Hits: " + hits.Length);
             foreach (Collider hit in hits)
             {
+
+                Debug.Log(hit);
+
                 if (hit == null) continue;
                 Box boxComp = hit.GetComponentInParent<Box>();
                 if (boxComp != null)
