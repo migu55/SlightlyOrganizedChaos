@@ -311,13 +311,13 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 0
-  m_Volume: 0.4
+  m_Volume: 0.6
   m_Pitch: 1
   Loop: 0
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
-  Priority: 128
+  Priority: 80
   DopplerLevel: 1
   MinDistance: 1
   MaxDistance: 500
@@ -1211,7 +1211,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   menuMusic: {fileID: 8300000, guid: 4dc8459762256f248a8adc36d91d575b, type: 3}
   preroundMusic: {fileID: 8300000, guid: 0e1e1042ac33468429b7f1a9a9c1234c, type: 3}
-  roundMusic: {fileID: 0}
+  roundMusic: {fileID: 8300000, guid: 5b220b12e5074d04eacfdbdc4fb022f5, type: 3}
 --- !u!1 &852525046
 GameObject:
   m_ObjectHideFlags: 0
