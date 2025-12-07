@@ -32,71 +32,74 @@ public class ForkliftPickup : MonoBehaviour
     /// </summary>
     public void AttachPallet(Rigidbody pallet)
     {
+        if (pallet == null || forkTransform == null) return;
 
-        // pallet.isKinematic = false; // ensure pallet is dynamic
         currentPallet = pallet;
 
-        // // Create a ConfigurableJoint on the pallet
-        // currentJoint = pallet.gameObject.AddComponent<ConfigurableJoint>();
+        // Ensure fork has a kinematic rigidbody to connect joint to
+        Rigidbody forkRb = forkTransform.GetComponent<Rigidbody>();
+        if (forkRb == null)
+        {
+            forkRb = forkTransform.gameObject.AddComponent<Rigidbody>();
+            forkRb.isKinematic = true; // kinematic so it moves with script, not physics
+            Debug.Log("Added kinematic Rigidbody to forks");
+        }
 
-        // // Set the connected rigid body to the forklift (or a body on the forks)
-        // Rigidbody forkliftRb = GetComponent<Rigidbody>();
-        // if (forkliftRb != null)
-        // {
-        //     currentJoint.connectedBody = forkliftRb;
-        // }
+        // Create a ConfigurableJoint on the pallet
+        currentJoint = pallet.gameObject.AddComponent<ConfigurableJoint>();
+        currentJoint.connectedBody = forkRb;
 
-        // // Configure joint to allow free movement but with spring tension
-        // // Lock all linear and angular axes - the spring will pull back to anchor
-        // currentJoint.xMotion = ConfigurableJointMotion.Limited;
-        // currentJoint.yMotion = ConfigurableJointMotion.Limited;
-        // currentJoint.zMotion = ConfigurableJointMotion.Limited;
-        // currentJoint.angularXMotion = ConfigurableJointMotion.Free;
-        // currentJoint.angularYMotion = ConfigurableJointMotion.Free;
-        // currentJoint.angularZMotion = ConfigurableJointMotion.Free;
+        // Configure motion - limited movement with spring tension
+        currentJoint.xMotion = ConfigurableJointMotion.Limited;
+        currentJoint.yMotion = ConfigurableJointMotion.Limited;
+        currentJoint.zMotion = ConfigurableJointMotion.Limited;
+        
+        // Allow some rotation for realism but dampen it
+        currentJoint.angularXMotion = ConfigurableJointMotion.Limited;
+        currentJoint.angularYMotion = ConfigurableJointMotion.Limited;
+        currentJoint.angularZMotion = ConfigurableJointMotion.Limited;
 
-        // // Set anchor point on pallet (local origin is usually fine)
-        // currentJoint.anchor = Vector3.zero;
+        // Set anchor point on pallet (center)
+        currentJoint.anchor = Vector3.zero;
+        currentJoint.autoConfigureConnectedAnchor = true;
 
-        // // Set connected anchor relative to forklift's rigidbody
-        // // Adjust this offset to match where the pallet should sit on the forks
-        // if (forkTransform != null)
-        // {
-        //     Vector3 relativePos = forkliftRb != null
-        //         ? forkliftRb.transform.InverseTransformPoint(forkTransform.position)
-        //         : Vector3.zero;
-        //     currentJoint.connectedAnchor = relativePos;
-        // }
+        // Set linear limits
+        var linearLimit = new SoftJointLimit { limit = maxDistance, bounciness = 0f };
+        currentJoint.linearLimit = linearLimit;
 
-        // // Set spring parameters for gentle tension
-        // var linearLimit = new SoftJointLimit { limit = maxDistance };
-        // currentJoint.linearLimit = linearLimit;
+        // Set angular limits (small angles)
+        var angularLimit = new SoftJointLimit { limit = 5f, bounciness = 0f };
+        currentJoint.lowAngularXLimit = angularLimit;
+        currentJoint.highAngularXLimit = angularLimit;
+        currentJoint.angularYLimit = angularLimit;
+        currentJoint.angularZLimit = angularLimit;
 
-        // var spring = new JointDrive
-        // {
-        //     positionSpring = attachSpring,
-        //     positionDamper = attachDamping,
-        //     maximumForce = Mathf.Infinity
-        // };
-        // currentJoint.xDrive = spring;
-        // currentJoint.yDrive = spring;
-        // currentJoint.zDrive = spring;
+        // Set spring parameters for tight connection
+        var spring = new JointDrive
+        {
+            positionSpring = attachSpring,
+            positionDamper = attachDamping,
+            maximumForce = Mathf.Infinity
+        };
+        currentJoint.xDrive = spring;
+        currentJoint.yDrive = spring;
+        currentJoint.zDrive = spring;
 
-        // // Angular damping so pallet doesn't spin wildly
-        // var angularSpring = new JointDrive
-        // {
-        //     positionSpring = 0f,
-        //     positionDamper = 50f,
-        //     maximumForce = Mathf.Infinity
-        // };
-        // currentJoint.angularXDrive = angularSpring;
-        // currentJoint.angularYZDrive = angularSpring;
+        // Angular damping to prevent spinning
+        var angularSpring = new JointDrive
+        {
+            positionSpring = attachSpring * 0.5f,
+            positionDamper = attachDamping * 0.5f,
+            maximumForce = Mathf.Infinity
+        };
+        currentJoint.angularXDrive = angularSpring;
+        currentJoint.angularYZDrive = angularSpring;
 
-        // // Set break force/torque
-        // currentJoint.breakForce = breakForce;
-        // currentJoint.breakTorque = breakForce;
+        // Set break force/torque
+        currentJoint.breakForce = breakForce;
+        currentJoint.breakTorque = breakForce;
 
-        // Debug.Log($"Pallet attached to forklift with spring joint (spring: {attachSpring}, damping: {attachDamping})");
+        Debug.Log($"Pallet attached to forklift with ConfigurableJoint (spring: {attachSpring}, damping: {attachDamping})");
     }
 
     /// <summary>
@@ -104,18 +107,13 @@ public class ForkliftPickup : MonoBehaviour
     /// </summary>
     public void DetachPallet()
     {
-        // currentPallet.isKinematic = true;
+        if (currentJoint != null)
+        {
+            Destroy(currentJoint);
+            currentJoint = null;
+        }
+
         currentPallet = null;
-        // if (currentPallet == null) return;
-
-        // if (currentJoint != null)
-        // {
-        //     Destroy(currentJoint);
-        //     currentJoint = null;
-        // }
-
-        // // Pallet is already dynamic; joint destruction leaves it free
-        // currentPallet = null;
         Debug.Log("Pallet detached from forklift");
     }
 

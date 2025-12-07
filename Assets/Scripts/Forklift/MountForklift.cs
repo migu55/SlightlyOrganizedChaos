@@ -5,6 +5,8 @@ using UnityEngine.InputSystem;
 // To be placed on the forklift
 public class MountForklift : MonoBehaviour, Interactable
 {
+
+    public ForkliftAudioController audioController;
     private Transform playerTransform;
     private Transform cameraTransform;
     private Rigidbody forkliftRigidbody;
@@ -55,7 +57,7 @@ public class MountForklift : MonoBehaviour, Interactable
     private void Mount()
     {
         Debug.Log("Mounting");
-
+        audioController.PlayEngineStart();
         //Setting the forklift camera to the active camera and turning off the player camera
         forkliftCamera.rect = playerCamera.rect;
         forkliftCamera.depth = playerCamera.depth + 1;
@@ -82,7 +84,8 @@ public class MountForklift : MonoBehaviour, Interactable
     public void Dismount()
     {
         if (!mounted) return;
-
+        audioController.StopEngineIdle();
+        audioController.PlayEngineStop();
         //enabling the player camera and disabling the forklift camera
         Debug.Log("Dismounting");
         playerCamera.enabled = true;

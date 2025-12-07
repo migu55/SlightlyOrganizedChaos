@@ -7,6 +7,8 @@ public class ForkliftController : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public float rotateSpeed = 1;
+
+    public ForkliftAudioController audioController;
     private float movement;
     private Vector2 rotation;
 
@@ -30,6 +32,8 @@ public class ForkliftController : MonoBehaviour
     Rigidbody rb;
 
     private Ray ray;
+
+    
     void Start()
     {
         rb = GetComponent<Rigidbody>(); //get rigidbody, responsible for enabling collision with other colliders
@@ -141,6 +145,7 @@ public class ForkliftController : MonoBehaviour
         }
 
         rb.AddForce(transform.TransformDirection(moveDir), ForceMode.VelocityChange);
+        audioController.ChangeEngineIdlePitch(0.5f + Mathf.Abs(movement) * 0.5f);
 
         float moveThreshold = 0.1f;
         float steeringSpeed = 0.5f;
@@ -163,6 +168,19 @@ public class ForkliftController : MonoBehaviour
             Vector3 newPosition = forks.transform.localPosition + lifting;
             newPosition.y = Mathf.Clamp(newPosition.y, 2.2f, 8f);
             forks.transform.localPosition = newPosition;
+            Debug.Log(lifting);
+            if(lifting.y > 0)
+            {
+                audioController.PlayForkLiftSound();
+            }
+            else
+            {
+                audioController.PlayForkLiftSoundReverse();
+            }
+        }
+        else
+        {
+            audioController.StopForkLiftSound();
         }
         // Apply tilting
         if (tilting != Vector3.zero)
