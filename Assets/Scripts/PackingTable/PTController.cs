@@ -135,12 +135,15 @@ public class PTController : MonoBehaviour
         {
             Destroy(currentPallet);
             RemovePallet();
+        } else
+        {
+            Debug.Log("Calling Delete Box");
+            palletData.deleteBoxFromZone();
+
+            StartCoroutine(DelayBoxProcessing()); //delays so all of the boxes dont immediately expel themselves from the pallet
         }
 
-        Debug.Log("Calling Delete Box");
-        palletData.deleteBoxFromZone();
-
-        StartCoroutine(DelayBoxProcessing()); //delays so all of the boxes dont immediately expel themselves from the pallet
+        
         flag = false;
     }
 
