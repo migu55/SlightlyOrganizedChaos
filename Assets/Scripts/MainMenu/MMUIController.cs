@@ -19,6 +19,8 @@ public class MMUIController : MonoBehaviour
     public GameObject imageHolder;
     private Image controlsImage;
 
+    GameObject lastSelected = null;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -29,11 +31,13 @@ public class MMUIController : MonoBehaviour
 
     public void PlayGame()
     {
+        SFXController.Instance.PlayClip(SFXController.Instance.uiSelect);
         SceneManager.LoadScene("Default");
     }
 
     public void OpenControls()
     {
+        SFXController.Instance.PlayClip(SFXController.Instance.uiSelect);
         homeScreen.SetActive(false);
         controlsScreen.SetActive(true);
         homeClosedButton = EventSystem.current.currentSelectedGameObject;
@@ -43,21 +47,25 @@ public class MMUIController : MonoBehaviour
 
     public void SetPlayerControls()
     {
+        SFXController.Instance.PlayClip(SFXController.Instance.uiSelect);
         controlsImage.sprite = playerControlsImg;
     }
     
     public void SetForkliftControls()
     {
+        SFXController.Instance.PlayClip(SFXController.Instance.uiSelect);
         controlsImage.sprite = forkliftControlsImg;
     }
     
     public void SetUIControls()
     {
+        SFXController.Instance.PlayClip(SFXController.Instance.uiSelect);
         controlsImage.sprite = UIControlsImg;
     }
     
     public void CloseControls()
     {
+        SFXController.Instance.PlayClip(SFXController.Instance.uiSelect);
         controlsScreen.SetActive(false);
         homeScreen.SetActive(true);
         EventSystem.current.SetSelectedGameObject(null);
@@ -66,6 +74,7 @@ public class MMUIController : MonoBehaviour
     
     public void OpenCredits()
     {
+        SFXController.Instance.PlayClip(SFXController.Instance.uiSelect);
         homeScreen.SetActive(false);
         creditsScreen.SetActive(true);
         homeClosedButton = EventSystem.current.currentSelectedGameObject;
@@ -75,6 +84,7 @@ public class MMUIController : MonoBehaviour
     
     public void CloseCredits()
     {
+        SFXController.Instance.PlayClip(SFXController.Instance.uiSelect);
         creditsScreen.SetActive(false);
         homeScreen.SetActive(true);       
         EventSystem.current.SetSelectedGameObject(null);
@@ -90,6 +100,21 @@ public class MMUIController : MonoBehaviour
     #endif
     }
 
+    private bool IsNavigationInput()
+    {
+        var gamepad = Gamepad.current;
+        if (gamepad == null) return false;
+
+        return gamepad.dpad.up.wasPressedThisFrame
+            || gamepad.dpad.down.wasPressedThisFrame
+            || gamepad.dpad.left.wasPressedThisFrame
+            || gamepad.dpad.right.wasPressedThisFrame
+            || gamepad.leftStick.up.wasPressedThisFrame
+            || gamepad.leftStick.down.wasPressedThisFrame
+            || gamepad.leftStick.left.wasPressedThisFrame
+            || gamepad.leftStick.right.wasPressedThisFrame;
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -101,7 +126,7 @@ public class MMUIController : MonoBehaviour
 
                 if (gamepad.allControls.Any(control => control is ButtonControl button && button.wasPressedThisFrame))
                 {
-                    Debug.Log("pressed");
+                    SFXController.Instance.PlayClip(SFXController.Instance.uiSelect);
 
                     buttonPressed = true;
                     anyButtonScreen.SetActive(false);
@@ -109,10 +134,24 @@ public class MMUIController : MonoBehaviour
 
                     EventSystem.current.SetSelectedGameObject(null);
                     EventSystem.current.SetSelectedGameObject(homeFirstButton);
-                    Debug.Log(EventSystem.current.currentSelectedGameObject);
                 }
             }
         }
+
+        var selected = EventSystem.current.currentSelectedGameObject;
+
+        if (selected == null) return;
+        
+        if (selected != lastSelected)
+        {
+            if(IsNavigationInput())
+            {
+                SFXController.Instance.PlayClip(SFXController.Instance.uiInput, true);
+            }
+           
+        }
+      
+        lastSelected = selected;
         
     }
 }
