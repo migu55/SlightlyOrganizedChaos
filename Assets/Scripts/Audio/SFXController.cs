@@ -34,7 +34,7 @@ public class SFXController : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
-        audioSource = gameObject.AddComponent<AudioSource>();
+        audioSource = gameObject.GetComponent<AudioSource>();
     }
 
     public void PlayClip(AudioClip clip)

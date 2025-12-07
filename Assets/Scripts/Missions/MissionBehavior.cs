@@ -74,7 +74,7 @@ public class MissionBehavior : MonoBehaviour
 
     public void createMission(MissionData mDetails)
     {
-        if (activeMissions.FirstOrDefault(o => o.id == mDetails.id) != null) return;
+        if (mDetails != null && activeMissions.FirstOrDefault(m => m.id == mDetails.id) != null) return;
 
         MissionData mData;
 
@@ -303,7 +303,7 @@ public class MissionBehavior : MonoBehaviour
         roundActive = true;
         rgtr.RoundStatusRoundStart();
         SFXController.Instance.PlayClip(SFXController.Instance.roundStartJingle);
-        MusicManager.Instance.PlayMusic(MusicManager.Instance.menuMusic);
+        MusicManager.Instance.PlayMusic(MusicManager.Instance.roundMusic);
         //currentMissionID = 1; //set current Mission ID for this round
         requiredAmtOfMissions = (GameStats.Instance.gameRound / 2) + 3; //set required number of Missions for this round
         randomAmtOfMissions = GameStats.Instance.gameRound / 3; //every 3 rounds, add one random Mission
@@ -335,7 +335,7 @@ public class MissionBehavior : MonoBehaviour
     {
         Debug.Log("Round End");
         roundActive = false;
-        Debug.Log("SFX Play End Whistle");
+        SFXController.Instance.PlayClip(SFXController.Instance.roundEndWhistle);
         yield return new WaitForSeconds(1);
         //activeMissions.Clear();
         //missionIntervals.Clear();
