@@ -32,6 +32,16 @@ public class ForkliftController : MonoBehaviour
     Rigidbody rb;
 
     private Ray ray;
+    
+    // Track target steering angles for rear wheels (Y-axis only)
+    private float rearLeftSteerAngle = 0f;
+    private float rearRightSteerAngle = 0f;
+    
+    // Track wheel rolling rotation (X-axis only)
+    private float rearLeftSpinAngle = 0f;
+    private float rearRightSpinAngle = 0f;
+    private float frontLeftSpinAngle = 0f;
+    private float frontRightSpinAngle = 0f;
 
     
     void Start()
@@ -129,32 +139,32 @@ public class ForkliftController : MonoBehaviour
         // desired steer angle based on input
         float desiredSteer = -Mathf.Clamp(rotation.x * maxWheelSteer, -maxWheelSteer, maxWheelSteer);
 
+        // Smoothly interpolate target steering angles (Y rotation only)
+        rearLeftSteerAngle = Mathf.LerpAngle(rearLeftSteerAngle, desiredSteer, Time.fixedDeltaTime * wheelLerpSpeed);
+        rearRightSteerAngle = Mathf.LerpAngle(rearRightSteerAngle, desiredSteer, Time.fixedDeltaTime * wheelLerpSpeed);
+
+        // Apply combined steering (Y) and rolling (X) to rear wheels
         if (rearLeftWheel != null)
         {
-            Vector3 e = rearLeftWheel.transform.localEulerAngles;
-            // smoothly interpolate the y-angle toward the desired steer
-            float newY = Mathf.LerpAngle(e.y, desiredSteer, Time.fixedDeltaTime * wheelLerpSpeed);
-            rearLeftWheel.transform.localEulerAngles = new Vector3(e.x, newY, e.z);
+            rearLeftWheel.transform.localRotation = Quaternion.Euler(rearLeftSpinAngle, rearLeftSteerAngle, 0f);
         }
 
         if (rearRightWheel != null)
         {
-            Vector3 e = rearRightWheel.transform.localEulerAngles;
-            float newY = Mathf.LerpAngle(e.y, desiredSteer, Time.fixedDeltaTime * wheelLerpSpeed);
-            rearRightWheel.transform.localEulerAngles = new Vector3(e.x, newY, e.z);
+            rearRightWheel.transform.localRotation = Quaternion.Euler(rearRightSpinAngle, rearRightSteerAngle, 0f);
         }
 
         rb.AddForce(transform.TransformDirection(moveDir), ForceMode.VelocityChange);
         audioController.ChangeEngineIdlePitch(0.5f + Mathf.Abs(movement) * 0.5f);
 
+        // use local forward velocity to determine direction and wheel rotation
+        Vector3 localVel = transform.InverseTransformDirection(rb.linearVelocity);
+        float forwardVel = localVel.z;
+
         float moveThreshold = 0.1f;
         float steeringSpeed = 0.5f;
         if (rb != null)
         {
-            // use local forward velocity to determine direction
-            Vector3 localVel = transform.InverseTransformDirection(rb.linearVelocity);
-            float forwardVel = localVel.z;
-
             if (rb.linearVelocity.sqrMagnitude > moveThreshold * moveThreshold)
             {
                 float dir = forwardVel < 0f ? -1f : 1f;
@@ -209,7 +219,7 @@ public class ForkliftController : MonoBehaviour
             // Raycast from the RotatePoint toward the camera to detect obstructions
             ray = new Ray(RotatePoint.transform.position, -RotatePoint.transform.forward);
             float obstructionDistance = float.PositiveInfinity;
-            if (Physics.Raycast(ray, out RaycastHit hitInfo, maxDistance, ~LayerMask.GetMask("Forklift")))
+            if (Physics.Raycast(ray, out RaycastHit hitInfo, maxDistance, ~LayerMask.GetMask("Forklift", "Player")))
             {
                 obstructionDistance = hitInfo.distance;
             }
@@ -244,8 +254,8 @@ public class ForkliftController : MonoBehaviour
         // set new local rotation
         RotatePoint.transform.localEulerAngles = new Vector3(newPitch, newYaw, current.z);
 
-
-        RotateWheels(rb.linearVelocity.z);
+        // Pass forward velocity to wheel rotation
+        RotateWheels(forwardVel);
 
 
 
@@ -271,7 +281,7 @@ public class ForkliftController : MonoBehaviour
 
         // convert linear velocity (m/s) to RPM:
         // rpm = (velocity / (2 * PI * radius)) * 60
-        float rpm = (velocity / (2f * Mathf.PI * radius)) * 60f;
+        float rpm = velocity / (2f * Mathf.PI * radius) * 60f;
 
         // convert RPM to degrees per second (360 degrees per revolution, 60 seconds per minute)
         float degreesPerSecond = rpm * 360f / 60f; // = rpm * 6
@@ -279,10 +289,31 @@ public class ForkliftController : MonoBehaviour
         // apply rotation this frame around local X axis
         float deltaDegrees = degreesPerSecond * Time.fixedDeltaTime;
 
-        // if (rearLeftWheel != null) rearLeftWheel.transform.Rotate(deltaDegrees, 0f, 0f, Space.Self);
-        // if (rearRightWheel != null) rearRightWheel.transform.Rotate(deltaDegrees, 0f, 0f, Space.Self);
-        if (frontLeftWheel != null) frontLeftWheel.transform.Rotate(deltaDegrees, 0f, 0f, Space.Self);
-        if (frontRightWheel != null) frontRightWheel.transform.Rotate(deltaDegrees, 0f, 0f, Space.Self);
+        // Update spin angles for all wheels
+        rearLeftSpinAngle += deltaDegrees;
+        rearRightSpinAngle += deltaDegrees;
+        frontLeftSpinAngle += deltaDegrees;
+        frontRightSpinAngle += deltaDegrees;
+        
+        // Apply rolling rotation to rear wheels (combined with steering above)
+        if (rearLeftWheel != null)
+        {
+            rearLeftWheel.transform.localRotation = Quaternion.Euler(rearLeftSpinAngle, rearLeftSteerAngle, 0f);
+        }
+        if (rearRightWheel != null)
+        {
+            rearRightWheel.transform.localRotation = Quaternion.Euler(rearRightSpinAngle, rearRightSteerAngle, 0f);
+        }
+        
+        // Apply rolling rotation to front wheels (no steering)
+        if (frontLeftWheel != null)
+        {
+            frontLeftWheel.transform.localRotation = Quaternion.Euler(frontLeftSpinAngle, 0f, 0f);
+        }
+        if (frontRightWheel != null)
+        {
+            frontRightWheel.transform.localRotation = Quaternion.Euler(frontRightSpinAngle, 0f, 0f);
+        }
     }
 
 }
