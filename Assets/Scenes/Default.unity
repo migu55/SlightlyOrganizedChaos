@@ -418,7 +418,10 @@ MonoBehaviour:
   palletRecieved: {fileID: 8300000, guid: 72988f7d08a20504cb1f2e909df127d5, type: 3}
   playerReady: {fileID: 8300000, guid: 3cbce249a08c83049ae2d267df2e5aa1, type: 3}
   playerUnready: {fileID: 8300000, guid: 25262e8b12f24304fa3ed86feb615258, type: 3}
-  uiInput: {fileID: 0}
+  errorInput: {fileID: 8300000, guid: a25e2d33ecdf3b2418d632d71c06c7d3, type: 3}
+  boxLaunch: {fileID: 8300000, guid: 6560b29777fe70e4cbe6a57ae8567032, type: 3}
+  uiInput: {fileID: 8300000, guid: abe6e535fdeebe84795a7aba16def2a7, type: 3}
+  uiSelect: {fileID: 8300000, guid: 48499c1b8a118324f9c81419e50bdc63, type: 3}
 --- !u!1 &86525193
 GameObject:
   m_ObjectHideFlags: 0
