@@ -294,7 +294,8 @@ public class Pallet : MonoBehaviour
             Vector3 overlapExtents = Vector3.Max(Vector3.zero, halfExtents - eps);
 
             // check for any colliders inside this zone
-            Collider[] hits = Physics.OverlapBox(center, overlapExtents, zone.transform.rotation);
+            // use the pallet's boxLayerMask so we only get Box colliders (avoid returning "everything else")
+            Collider[] hits = Physics.OverlapBox(center, overlapExtents, zone.transform.rotation, (int)boxLayerMask);
             bool deletedOne = false;
             foreach (Collider hit in hits)
             {
