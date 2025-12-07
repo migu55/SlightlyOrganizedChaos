@@ -297,14 +297,14 @@ public class MissionBehavior : MonoBehaviour
         return activeMissions.FirstOrDefault(m => m.id == missionID);
     }
 
-    void BeginRound() //unknown where this should be called
+    void BeginRound()
     {
         Debug.Log("Round Start");
         roundActive = true;
         rgtr.RoundStatusRoundStart();
         SFXController.Instance.PlayClip(SFXController.Instance.roundStartJingle);
         MusicManager.Instance.PlayMusic(MusicManager.Instance.roundMusic);
-        //currentMissionID = 1; //set current Mission ID for this round
+        currentMissionID = 1; //set current Mission ID for this round
         requiredAmtOfMissions = (GameStats.Instance.gameRound / 2) + 3; //set required number of Missions for this round
         randomAmtOfMissions = GameStats.Instance.gameRound / 3; //every 3 rounds, add one random Mission
         Debug.Log("Req " + requiredAmtOfMissions);

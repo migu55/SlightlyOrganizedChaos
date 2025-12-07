@@ -29,6 +29,7 @@ public class UIController : MonoBehaviour
         else sys.SetSelectedGameObject(null);
         if (input.x > 0)
         {
+            SFXController.Instance.PlayClip(SFXController.Instance.uiInput, true);
             if (current.right)
             {
                 sys.SetSelectedGameObject(current.right);
@@ -40,6 +41,7 @@ public class UIController : MonoBehaviour
         }
         if (input.x < 0) 
         {
+            SFXController.Instance.PlayClip(SFXController.Instance.uiInput, true);
             if (current.left)
             {
                 sys.SetSelectedGameObject(current.left);
@@ -52,11 +54,13 @@ public class UIController : MonoBehaviour
         
         if (input.y > 0 && current.up) 
         {
+            SFXController.Instance.PlayClip(SFXController.Instance.uiInput, true);
             sys.SetSelectedGameObject(current.up);
             current = current.up.GetComponent<UIItem>();
         }
         if (input.y < 0 && current.down)
         {
+            SFXController.Instance.PlayClip(SFXController.Instance.uiInput, true);
             sys.SetSelectedGameObject(current.down);
             current = current.down.GetComponent<UIItem>();
         }
@@ -78,6 +82,7 @@ public class UIController : MonoBehaviour
             return;
         }
 
+        SFXController.Instance.PlayClip(SFXController.Instance.uiSelect);
         // If this UIItem represents a box type selection, update the menu selection
         if (!string.IsNullOrEmpty(current.boxType))
         {

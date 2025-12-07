@@ -19,14 +19,11 @@ public class ClockInHandler : MonoBehaviour, Interactable
     private PlayerTracker tracker;
     [SerializeField]
     private TextBoxShowHide tutorial;
-    [SerializeField]
-    private TruckSpawnerManager truckManager;
 
     private List<int> playerIndexes;
     private List<TextMeshPro> readyTexts;
     private MissionData mData;
     private List<MountForklift> forklifts;
-    private bool truckSpawned = false;
 
     [SerializeField]
     GameObject roundHandlerGO;
@@ -141,15 +138,8 @@ public class ClockInHandler : MonoBehaviour, Interactable
             }
         }
 
-        truckManager = truckManager != null ? truckManager : FindFirstObjectByType<TruckSpawnerManager>();
-
         tutorial = tutorial != null ? tutorial : FindFirstObjectByType<TextBoxShowHide>();
 
-        if (!truckSpawned)
-        {
-            truckManager.spawnTruck(mData.id, false);
-            truckSpawned = true;
-        }
         
         bool ready = true;
         foreach (bool r in playersReady)

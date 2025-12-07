@@ -81,6 +81,9 @@ public class PTController : MonoBehaviour
 
                 rb.AddTorque(randomTorque, ForceMode.Impulse);
             }
+
+            SFXController.Instance.PlayClip(SFXController.Instance.boxLaunch);
+
             // for later: play error noise? show error feedback?
             currentPallet.GetComponent<Pallet>().FillEmptyZonesWithBoxes();
         }

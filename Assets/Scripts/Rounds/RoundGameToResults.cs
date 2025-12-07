@@ -188,7 +188,6 @@ public class RoundGameToResults : MonoBehaviour
 
     public IEnumerator RoundStatusPreRoundCoroutine()
     {
-        Debug.Log("InCo");
         roundStatusText.SetActive(true);
         rst.text = "Shift\nStart!";
         yield return new WaitForSeconds(2f);
@@ -202,7 +201,6 @@ public class RoundGameToResults : MonoBehaviour
 
     public IEnumerator RoundStatusRoundStartCoroutine()
     {
-        Debug.Log("InCo");
         roundStatusText.SetActive(true);
         rst.text = "Incoming\nOrders!";
         yield return new WaitForSeconds(2f);

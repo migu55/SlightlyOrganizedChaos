@@ -226,7 +226,7 @@ public class OpenBayDoor2 : MonoBehaviour, Interactable
                         SpawnerZone?.GetComponent<TruckToDisplay>()?.missionDisplay?.GetComponent<MissionDisplayController>()?.ClearMissionTruck();
                         return true; // allow close after forced deletion
                     }
-
+                    SFXController.Instance.PlayClip(SFXController.Instance.errorInput);
                     Debug.Log($"OpenBayDoor2: cannot close, send-mode truck '{truck.name}' still has spawned({spawned}) or pending({pending}) pallets.");
                     return false; // block closing
                 }
@@ -246,6 +246,7 @@ public class OpenBayDoor2 : MonoBehaviour, Interactable
                 Debug.Log($"OpenBayDoor2: Processing receive-mode truck '{truck.name}': receivedPallets={recCount}, missionId={receiver.missionId}");
                 if (recCount == 0 && !forceSendEvenIfEmpty)
                 {
+                    SFXController.Instance.PlayClip(SFXController.Instance.errorInput);
                     Debug.Log($"OpenBayDoor2: cannot close, receive-mode truck '{truck.name}' has no received pallets.");
                     return false; // block closing
                 }
