@@ -49,11 +49,9 @@ public class PTController : MonoBehaviour
         else
         {
             DetermineBoxType(b.typeOfBox);
-            
-            
 
             Vector3 spawningVector = Vector3.up * (boxEndpoint.transform.localScale.y + currentBoxType.transform.localScale.y) / 2f;
-            Vector3 coreOffset = new Vector3(-1, 5, 0);
+            Vector3 coreOffset = new Vector3(-1, 7, 0);
 
 
             GameObject spawnedBox = Instantiate(currentBoxType, boxEndpoint.transform.position
@@ -70,7 +68,7 @@ public class PTController : MonoBehaviour
             {
                 Vector3 launchDirection = new Vector3(-1, 0.5f, 0).normalized;
 
-                rb.AddForce(launchDirection * 50f, ForceMode.Impulse);
+                rb.AddForce(launchDirection * 40f, ForceMode.Impulse);
                 rb.AddForce(Vector3.up * 3f, ForceMode.Impulse);
 
                 Vector3 randomTorque = new Vector3(
@@ -120,9 +118,9 @@ public class PTController : MonoBehaviour
         BoxData boxToSpawn = palletData.palletBoxes[0];
         DetermineBoxType(boxToSpawn.typeOfBox);
         palletData.palletBoxes.RemoveAt(0);
+        Vector3 offset = new Vector3(0, 0, -0.5f);
         
-        GameObject spawnedBox = Instantiate(currentBoxType, boxEndpoint.transform.position 
-            + Vector3.up * (boxEndpoint.transform.localScale.y + currentBoxType.transform.localScale.y) / 2f, Quaternion.identity); //spawn box at trigger
+        GameObject spawnedBox = Instantiate(currentBoxType, boxEndpoint.transform.position + offset, Quaternion.identity); //spawn box at trigger
         Box spawningBoxData = spawnedBox.GetComponent<Box>();
         if (spawningBoxData == null)
         {

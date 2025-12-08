@@ -2449,8 +2449,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 314b75b7e90528545a256e0efde1be56, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pitchMin: 0.95
-  pitchMax: 1.05
+  pitchMin: 0.9
+  pitchMax: 1.1
   roundStartJingle: {fileID: 8300000, guid: 504479192882d044a86e119709c7c4cd, type: 3}
   roundEndWhistle: {fileID: 8300000, guid: 013002e9456bf0f4b845a817811accfa, type: 3}
   clockInWhistle: {fileID: 8300000, guid: 136a101e304c9004ea31572fda2aa50b, type: 3}
@@ -2464,6 +2464,9 @@ MonoBehaviour:
   boxLaunch: {fileID: 8300000, guid: 6560b29777fe70e4cbe6a57ae8567032, type: 3}
   uiInput: {fileID: 8300000, guid: abe6e535fdeebe84795a7aba16def2a7, type: 3}
   uiSelect: {fileID: 8300000, guid: 48499c1b8a118324f9c81419e50bdc63, type: 3}
+  boxSpawned: {fileID: 8300000, guid: 6fad7428a85f76a4ea227899f835363b, type: 3}
+  boxAbsorbed: {fileID: 0}
+  palletSpawned: {fileID: 0}
 --- !u!4 &68693277 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: 8fa324388c16b5c4eac9846338b35b17, type: 3}
@@ -33433,7 +33436,7 @@ Transform:
   m_GameObject: {fileID: 1330229328}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 1204, y: 845, z: 3132}
+  m_LocalPosition: {x: 1200, y: 845, z: 3132}
   m_LocalScale: {x: 10, y: 15, z: 10}
   m_ConstrainProportionsScale: 0
   m_Children:

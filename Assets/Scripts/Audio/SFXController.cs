@@ -22,6 +22,11 @@ public class SFXController : MonoBehaviour
     public AudioClip boxLaunch;
     public AudioClip uiInput;
     public AudioClip uiSelect;
+    public AudioClip boxSpawned;
+    public AudioClip boxAbsorbed;
+    public AudioClip boxCollision;
+    public AudioClip palletSpawned;
+    public AudioClip palletDestroyed;
 
     private AudioSource audioSource;
 
