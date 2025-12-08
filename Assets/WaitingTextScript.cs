@@ -23,7 +23,7 @@ public class WaitingTextScript : MonoBehaviour
     {
         showText = true;
 
-        if (GameStats.Instance.allPlayersReady)
+        if (!GameStats.Instance.allPlayersReady)
         {
             showText = false;
         }
