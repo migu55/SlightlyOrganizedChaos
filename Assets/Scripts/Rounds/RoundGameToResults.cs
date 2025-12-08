@@ -171,7 +171,7 @@ public class RoundGameToResults : MonoBehaviour
 
         GameStats.Instance.gameStarted = true;
         GameStats.Instance.gamePreviousRoundBalance = 500;
-        GameStats.Instance.gameTime = 360;
+        GameStats.Instance.gameTime = 390;
         GameStats.Instance.gameRound++;
         GameStats.Instance.gameBalance = 500;
         GameStats.Instance.gameQuota = 1500;
