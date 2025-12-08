@@ -8,6 +8,7 @@ public class ClockInHandler : MonoBehaviour, Interactable
 {
     public List<bool> playersReady;
     public bool tutorialEnabled;
+    public bool firstTutorial = true;
 
     [SerializeField]
     private PlayerInputManager manager;
@@ -163,6 +164,7 @@ public class ClockInHandler : MonoBehaviour, Interactable
     private void AllPlayersReady()
     {
         tutorialEnabled = false;
+        firstTutorial = false;
         GameStats.Instance.allPlayersReady = true;
         SFXController.Instance.PlayClip(SFXController.Instance.clockInWhistle);
         ph.ResetRoundTimer();

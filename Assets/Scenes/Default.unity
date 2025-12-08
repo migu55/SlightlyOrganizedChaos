@@ -25924,6 +25924,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 181076038}
     - target: {fileID: 7929693760395510356, guid: 6fcc2501c5651a94f8be508e286d3e75, type: 3}
+      propertyPath: readySystem
+      value: 
+      objectReference: {fileID: 6967496995617960584}
+    - target: {fileID: 7929693760395510356, guid: 6fcc2501c5651a94f8be508e286d3e75, type: 3}
       propertyPath: uiController
       value: 
       objectReference: {fileID: 2622093861959283161}
@@ -25982,6 +25986,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   triggered: 0
   player: {fileID: 0}
+--- !u!114 &1037901643 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7929693760395510356, guid: 6fcc2501c5651a94f8be508e286d3e75, type: 3}
+  m_PrefabInstance: {fileID: 1037901639}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1037901640}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 317952e06d6d7c14a8da67347d7e0ff9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1038815912
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -54032,6 +54047,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: ProductOrderMenu
       objectReference: {fileID: 0}
+    - target: {fileID: 5966150118556018915, guid: 59e483b50d829074c9f633ece4354ab7, type: 3}
+      propertyPath: menuButton
+      value: 
+      objectReference: {fileID: 1037901643}
     - target: {fileID: 9146713564220730061, guid: 59e483b50d829074c9f633ece4354ab7, type: 3}
       propertyPath: m_AnchoredPosition.x
       value: 50
@@ -54221,6 +54240,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d48396133b23db646af3b9dbfeb9d822, type: 3}
+--- !u!114 &6967496995617960584 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5132760460885443008, guid: d48396133b23db646af3b9dbfeb9d822, type: 3}
+  m_PrefabInstance: {fileID: 6967496995617960583}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2006649027}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e0e4b3ee9638e54281c68974f667088, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

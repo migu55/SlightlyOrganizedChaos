@@ -27,6 +27,8 @@ public class ProductOrderingMenu : MonoBehaviour
     private TextMeshProUGUI order;
     [SerializeField]
     private TextMeshProUGUI pricing;
+    [SerializeField]
+    private NoahOrderHandlerTrigger menuButton;
 
     private Box boxToOrder;
     private TruckSpawnerManager spawner;
@@ -178,6 +180,15 @@ public class ProductOrderingMenu : MonoBehaviour
         // Clear the persistent basket after sending, and subtract price from budget.
         orderBasket.Clear();
         GameStats.Instance.gameBalance -= totalPrice; totalPrice = 0;
+        UpdateText();
+        foreach (GameObject p in menuButton.playersInArea)
+        {
+            if (p.GetComponent<NoahOrderHandlerPlayer>().isMenuOpen)
+            {
+                Debug.Log("Player in menu, closing...");
+                menuButton.OpenOrCloseMenu(p);
+            }
+        }
         SFXController.Instance.PlayClip(SFXController.Instance.orderPlaced);
         Debug.Log("ProductOrderingMenu.PlaceOrder: Cleared order basket after sending.");
     }
