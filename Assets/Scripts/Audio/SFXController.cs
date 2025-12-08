@@ -27,6 +27,9 @@ public class SFXController : MonoBehaviour
     public AudioClip boxCollision;
     public AudioClip palletSpawned;
     public AudioClip palletDestroyed;
+    public AudioClip doorClicked;
+    public AudioClip doorMoved;
+    public AudioClip missionSpawned;
 
     private AudioSource audioSource;
 

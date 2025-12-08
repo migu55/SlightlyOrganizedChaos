@@ -97,6 +97,7 @@ public class MissionBehavior : MonoBehaviour
         activeMissions.Add(mData);
         Debug.Log("Created Mission ID: " + mData.id);
         GameStats.Instance.roundNumMissions++;
+        SFXController.Instance.PlayClip(SFXController.Instance.missionSpawned);
         truckSpawnerManager.spawnTruck(mData.id, false);
         //Destroy(mission);
     }

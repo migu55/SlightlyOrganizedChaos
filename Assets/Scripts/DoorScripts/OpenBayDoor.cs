@@ -458,6 +458,7 @@ public class OpenBayDoor : MonoBehaviour, Interactable
     public void Interact(GameObject interactor)
     {
         ToggleDoor();
+        SFXController.Instance.PlayClip(SFXController.Instance.doorClicked);
     }
 
     void Start()

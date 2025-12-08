@@ -45,6 +45,7 @@ public class PTController : MonoBehaviour
             palletData.palletBoxes.Add(box);
             //for later: update prefab visually
             currentPallet.GetComponent<Pallet>().FillEmptyZonesWithBoxes();
+            SFXController.Instance.PlayClip(SFXController.Instance.boxAbsorbed, true);
         }
         else
         {
@@ -128,16 +129,17 @@ public class PTController : MonoBehaviour
         }
 
         spawningBoxData.typeOfBox = boxToSpawn.typeOfBox;
+        SFXController.Instance.PlayClip(SFXController.Instance.boxSpawned, true);
 
         if (palletData.palletBoxes.Count <= 0)
         {
             Destroy(currentPallet);
             RemovePallet();
+            SFXController.Instance.PlayClip(SFXController.Instance.palletDestroyed);
         } else
         {
             Debug.Log("Calling Delete Box");
             palletData.deleteBoxFromZone();
-
             StartCoroutine(DelayBoxProcessing()); //delays so all of the boxes dont immediately expel themselves from the pallet
         }
 
@@ -157,6 +159,7 @@ public class PTController : MonoBehaviour
             Quaternion.identity);
         palletData = currentPallet.GetComponent<Pallet>();
         hasPallet = true;
+        SFXController.Instance.PlayClip(SFXController.Instance.palletSpawned);
     }
 
     public void LoadPallet(GameObject pallet)

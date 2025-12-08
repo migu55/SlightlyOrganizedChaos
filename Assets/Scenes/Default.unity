@@ -2465,8 +2465,12 @@ MonoBehaviour:
   uiInput: {fileID: 8300000, guid: abe6e535fdeebe84795a7aba16def2a7, type: 3}
   uiSelect: {fileID: 8300000, guid: 48499c1b8a118324f9c81419e50bdc63, type: 3}
   boxSpawned: {fileID: 8300000, guid: 6fad7428a85f76a4ea227899f835363b, type: 3}
-  boxAbsorbed: {fileID: 0}
-  palletSpawned: {fileID: 0}
+  boxAbsorbed: {fileID: 8300000, guid: 215a68c2754ab36438bc121a59aba920, type: 3}
+  boxCollision: {fileID: 0}
+  palletSpawned: {fileID: 8300000, guid: 171c7ec9c66ad5546b496672e0cdcf12, type: 3}
+  palletDestroyed: {fileID: 8300000, guid: 13529a164ca899f4d9ff3d9cbc04fad3, type: 3}
+  doorClicked: {fileID: 8300000, guid: 336b07e3fe1629f4da07ca0ea27b03c1, type: 3}
+  doorMoved: {fileID: 0}
 --- !u!4 &68693277 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: 8fa324388c16b5c4eac9846338b35b17, type: 3}
