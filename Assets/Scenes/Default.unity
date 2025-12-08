@@ -2471,6 +2471,7 @@ MonoBehaviour:
   palletDestroyed: {fileID: 8300000, guid: 13529a164ca899f4d9ff3d9cbc04fad3, type: 3}
   doorClicked: {fileID: 8300000, guid: 336b07e3fe1629f4da07ca0ea27b03c1, type: 3}
   doorMoved: {fileID: 0}
+  missionSpawned: {fileID: 8300000, guid: e627ca95ff0bc7d4fae1cd942a5e338c, type: 3}
 --- !u!4 &68693277 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: 8fa324388c16b5c4eac9846338b35b17, type: 3}
