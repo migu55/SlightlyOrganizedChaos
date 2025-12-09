@@ -42,7 +42,7 @@ public class NoahPricesHandler : MonoBehaviour
             time += Time.deltaTime;
         }
 
-        if (roundTime < roundEnd) roundTime += Time.deltaTime;
+        if (roundTime < roundEnd && GameStats.Instance.gameTime < 300) roundTime += Time.deltaTime;
     }
 
     public void UpdatePricesLocally()
@@ -50,8 +50,8 @@ public class NoahPricesHandler : MonoBehaviour
             // update prices
             time = 0;
             int min, max;
-            min = (int)Math.Min(Math.Floor(roundTime / 60) * 20, 60);
-            max = (int)Math.Min((Math.Floor(roundTime / 60) * 20) + 20, 100);
+            min = (int)Math.Min(Math.Floor(roundTime / 60) * 20, GameStats.Instance.gameTime < 300 ? 60 : 10);
+            max = (int)Math.Min((Math.Floor(roundTime / 60) * 20) + 20, GameStats.Instance.gameTime < 300 ? 100 : 10);
             if (min < 5) min = 5;
             for (int i = 0; i < newPrices.Count; i++)
             {
