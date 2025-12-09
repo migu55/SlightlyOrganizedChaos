@@ -67,10 +67,10 @@ public class SFXController : MonoBehaviour
     }
 
     // Play SFX in 3D at a world position
-    public void PlayAt(AudioClip clip, Vector3 pos, float volume = 1f)
+    public void PlayAt(AudioClip clip, Vector3 pos)
     {
         if (clip == null) return;
 
-        AudioSource.PlayClipAtPoint(clip, pos, volume);
+        AudioSource.PlayClipAtPoint(clip, pos, 0.5f);
     }
 }

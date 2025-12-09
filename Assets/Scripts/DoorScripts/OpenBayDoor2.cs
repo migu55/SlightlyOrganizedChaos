@@ -44,6 +44,7 @@ public class OpenBayDoor2 : MonoBehaviour, Interactable
 
         if (!isOpen)
         {
+            SFXController.Instance.PlayClip(SFXController.Instance.doorMoved);
             doorAnimator.Play(openState);
             isOpen = true;
         }
@@ -72,6 +73,7 @@ public class OpenBayDoor2 : MonoBehaviour, Interactable
 
         if (isOpen)
         {
+            SFXController.Instance.PlayClip(SFXController.Instance.doorMoved);
             doorAnimator.Play(closeState);
             isOpen = false;
         }
