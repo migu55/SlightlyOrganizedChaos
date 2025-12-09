@@ -2742,7 +2742,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Slightly\n<size=130>Organized</size> \n<size=160>Chaos</size>"
+  m_text: "Slightly\n<size=150>Organized</size> \n<size=180>Chaos</size>"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 3bf9859f9721e4770973e2f59160bc0b, type: 2}
   m_sharedMaterial: {fileID: 2394915803934739642, guid: 3bf9859f9721e4770973e2f59160bc0b, type: 2}
@@ -2769,8 +2769,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 100
-  m_fontSizeBase: 100
+  m_fontSize: 120
+  m_fontSizeBase: 120
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -32931,7 +32931,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1291734847
 Transform:
   m_ObjectHideFlags: 0
