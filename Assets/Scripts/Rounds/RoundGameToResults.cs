@@ -92,8 +92,8 @@ public class RoundGameToResults : MonoBehaviour
     void SpawnBoxes()
     {
         GameObject[] boxes = { prefabA, prefabB, prefabC };
-        int random = UnityEngine.Random.Range(1, 3);
-        int random2 = UnityEngine.Random.Range(1, 3);
+        int random = UnityEngine.Random.Range(0, 2);
+        int random2 = UnityEngine.Random.Range(0, 2);
 
         leftBox = Instantiate(boxes[random], new Vector3(-12.5f, -116, -1), Quaternion.identity);
         rightBox = Instantiate(boxes[random2], new Vector3(12.5f, -116, -1), Quaternion.identity);
