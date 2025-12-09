@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,6 +33,11 @@ public class RoundGameToResults : MonoBehaviour
     private DoorFail doorFailScript;
     private TruckSpawnerManager truckSpawnerManagerScript;
 
+    public GameObject prefabA, prefabB, prefabC;
+    public GameObject leftBox, rightBox;
+    public Vector3 leftR, rightR;
+    private bool flag = false;
+
     private bool inputDetected = true;
 
     private void Awake()
@@ -39,6 +45,7 @@ public class RoundGameToResults : MonoBehaviour
         whiteScreen = whiteScreenParent.GetComponent<Image>();
         clockInHandler = clockInGO.GetComponent<ClockInHandler>();
         rst = roundStatusText.transform.GetChild(0).gameObject.GetComponent<TextMeshProUGUI>();
+        StartCoroutine(RotationManager());
     }
 
     public void TransitionToResults()
@@ -67,6 +74,7 @@ public class RoundGameToResults : MonoBehaviour
         //whiteScreenParent.SetActive(true);
         SetAlpha(0);
         yield return StartCoroutine(FadeScreen(true));
+        SpawnBoxes();
         roundStatusText.SetActive(false);
         roundResultsCanvas.SetActive(true);
         roundResultsCamera.SetActive(true);
@@ -79,6 +87,25 @@ public class RoundGameToResults : MonoBehaviour
         yield return new WaitForSeconds(1);
         nextRoundText.SetActive(true);
         inputDetected = false;
+    }
+
+    void SpawnBoxes()
+    {
+        GameObject[] boxes = { prefabA, prefabB, prefabC };
+        int random = UnityEngine.Random.Range(1, 3);
+        int random2 = UnityEngine.Random.Range(1, 3);
+
+        leftBox = Instantiate(boxes[random], new Vector3(-12.5f, -116, -1), Quaternion.identity);
+        rightBox = Instantiate(boxes[random2], new Vector3(12.5f, -116, -1), Quaternion.identity);
+
+        leftBox.GetComponent<Rigidbody>().isKinematic = true;
+        rightBox.GetComponent<Rigidbody>().isKinematic = true;
+    }
+
+    void DestroyBoxes()
+    {
+        Destroy(leftBox);
+        Destroy(rightBox);
     }
 
     void SetAlpha(int alpha)
@@ -119,8 +146,12 @@ public class RoundGameToResults : MonoBehaviour
 
         if (GameStats.Instance.gameBalance < GameStats.Instance.gameQuota)
         {
+            GameStats.Instance.inRoundScreen = false;
+            GameStats.Instance.gameStarted = false;
             SceneManager.LoadScene("MainMenu");
         }
+
+        DestroyBoxes();
 
         GameStats.Instance.gamePreviousRoundBalance = GameStats.Instance.gameBalance;
         GameStats.Instance.gameTime = 360;
@@ -226,6 +257,48 @@ public class RoundGameToResults : MonoBehaviour
         if (GameStats.Instance.gameRound == 0 && GameStats.Instance.allPlayersReady && !GameStats.Instance.gameStarted)
         {
             FirstRound();
+        }
+    }
+
+    IEnumerator RotationManager()
+    {
+        while (true)
+        {
+            // Wait until BOTH boxes are available
+            yield return new WaitUntil(() => leftBox != null && rightBox != null);
+
+            // Run smooth rotation until one is destroyed
+            yield return StartCoroutine(SmoothRotationsLoop());
+        }
+    }
+
+    IEnumerator SmoothRotationsLoop()
+    {
+        while (leftBox != null && rightBox != null)
+        {
+            Quaternion leftStart = leftBox.transform.rotation;
+            Quaternion rightStart = rightBox.transform.rotation;
+
+            Quaternion leftTarget = UnityEngine.Random.rotation;
+            Quaternion rightTarget = UnityEngine.Random.rotation;
+
+            float duration = 1.5f;
+            float t = 0f;
+
+            while (t < duration)
+            {
+                // Stop immediately if either box was destroyed
+                if (leftBox == null || rightBox == null)
+                    yield break;
+
+                t += Time.deltaTime;
+                float progress = t / duration;
+
+                leftBox.transform.rotation = Quaternion.Slerp(leftStart, leftTarget, progress);
+                rightBox.transform.rotation = Quaternion.Slerp(rightStart, rightTarget, progress);
+
+                yield return null;
+            }
         }
     }
 }

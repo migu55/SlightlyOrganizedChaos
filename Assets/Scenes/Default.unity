@@ -34907,6 +34907,13 @@ MonoBehaviour:
   roundResultsCamera: {fileID: 1043011819}
   nextRoundText: {fileID: 1358755378}
   clockInGO: {fileID: 2006649027}
+  prefabA: {fileID: 136706, guid: 3947580fc7398cf478ca8abb0464349c, type: 3}
+  prefabB: {fileID: 136706, guid: 9d812687ed333004bb61d630b74c05fb, type: 3}
+  prefabC: {fileID: 136706, guid: 25563398bb981ae47b2592fe4e34c8e0, type: 3}
+  leftBox: {fileID: 0}
+  rightBox: {fileID: 0}
+  leftR: {x: 0, y: 0, z: 0}
+  rightR: {x: 0, y: 0, z: 0}
 --- !u!1001 &1356206744
 PrefabInstance:
   m_ObjectHideFlags: 0
