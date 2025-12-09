@@ -98,7 +98,7 @@ public class ProductOrderingMenu : MonoBehaviour
             if (comma < 2) order.text += ",";
             comma++;
         }
-        pricing.text = $"Total Price: {totalPrice}";
+        pricing.text = $"Total Price:\n$ {totalPrice}";
     }
 
     public void UpdateBoxType(string newBoxType)
