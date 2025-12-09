@@ -82,7 +82,7 @@ public class ProductOrderingMenu : MonoBehaviour
     {
         for (int i = 0; i < boxTypes.Count; i++)
         {
-            buttonsText[i].text = "Box o' " + boxTypes[i].typeOfBox + "\nPrice: $" + prices[i];
+            buttonsText[i].text = "Box o' " + boxTypes[i].typeOfBox + "\nPrice: $ " + prices[i];
         }
         label.text = "Select Box Type:\n" + boxToOrder.typeOfBox;
         order.text = "Current order:";
