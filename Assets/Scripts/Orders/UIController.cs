@@ -102,6 +102,10 @@ public class UIController : MonoBehaviour
                 // e.g. GameObject named "OrderButton" or "PlaceOrder"
                 current.menu.PlaceOrder();
             }
+            else if (goName.Contains("clear"))
+            {
+                current.menu.ClearOrder();
+            }
             else
             {
                 // Fallback: call PlaceOrder for action items if we can't determine exactly

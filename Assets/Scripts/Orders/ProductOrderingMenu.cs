@@ -85,7 +85,8 @@ public class ProductOrderingMenu : MonoBehaviour
             buttonsText[i].text = "Box " + boxTypes[i].typeOfBox + "\nPrice: $" + prices[i];
         }
         label.text = "Select Box Type:\n" + boxToOrder.typeOfBox;
-        order.text = "Current order:\n";
+        order.text = "Current order:";
+        int comma = 0;
         foreach (Box b in boxTypes)
         {
             int count = 0;
@@ -93,7 +94,9 @@ public class ProductOrderingMenu : MonoBehaviour
             {
                 if (d.typeOfBox == b.typeOfBox) count++;
             }
-            order.text += $"{count}x {b.typeOfBox}, ";
+            order.text += $"\n{count}x {b.typeOfBox}";
+            if (comma < 2) order.text += ",";
+            comma++;
         }
         pricing.text = $"Total Price: {totalPrice}";
     }
@@ -144,6 +147,13 @@ public class ProductOrderingMenu : MonoBehaviour
         }
         UpdateText();
         Debug.Log($"ProductOrderingMenu.AddToOrder: Added {count} x '{boxToOrder.typeOfBox}' to basket (total={orderBasket.Count}).");
+    }
+
+    public void ClearOrder()
+    {
+        Debug.Log("Clear Order");
+        orderBasket.Clear();
+        UpdateText();
     }
 
     public void PlaceOrder()
