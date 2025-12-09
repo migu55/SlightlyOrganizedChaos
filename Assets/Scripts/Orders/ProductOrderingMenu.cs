@@ -35,6 +35,7 @@ public class ProductOrderingMenu : MonoBehaviour
     // Persistent basket so player can add multiple types/quantities before placing the order
     private List<BoxData> orderBasket = new List<BoxData>();
     private int totalPrice;
+    private string[] names = { "Apple", "Blueberry", "Melon"};
 
     void Start()
     {
@@ -45,6 +46,8 @@ public class ProductOrderingMenu : MonoBehaviour
         boxToOrder = GameObject.FindGameObjectWithTag("BoxToOrder").GetComponent<Box>();
         UpdateBoxType(boxTypes[0].typeOfBox);
         UpdateBoxCount(1);
+
+
     }
 
     void Update()
@@ -53,6 +56,22 @@ public class ProductOrderingMenu : MonoBehaviour
         {
             spawner = GameObject.FindGameObjectWithTag("TruckSpawnHolder").GetComponent<TruckSpawnerManager>();
         }    
+    }
+
+    public string ConvertIndexToName(string letter)
+    {
+        switch (letter)
+        {
+            case "A":
+                return names[0];
+            case "B":
+                return names[1];
+            case "C":
+                return names[2];
+            default:
+                Debug.Log("Cooked");
+                return names[0];
+        }
     }
 
     public void EnableMenu()
@@ -82,10 +101,10 @@ public class ProductOrderingMenu : MonoBehaviour
     {
         for (int i = 0; i < boxTypes.Count; i++)
         {
-            buttonsText[i].text = "Box o' " + boxTypes[i].typeOfBox + "\nPrice: $ " + prices[i];
+            buttonsText[i].text = "Box o' " + names[i] + "\nPrice: $ " + prices[i];
         }
-        label.text = "Select Box Type:\n" + boxToOrder.typeOfBox;
-        order.text = "Current order:";
+        label.text = "Select Box Type:\n" + ConvertIndexToName(boxToOrder.typeOfBox);
+        order.text = "Current Order:";
         int comma = 0;
         foreach (Box b in boxTypes)
         {
@@ -94,7 +113,7 @@ public class ProductOrderingMenu : MonoBehaviour
             {
                 if (d.typeOfBox == b.typeOfBox) count++;
             }
-            order.text += $"\n{count}x {b.typeOfBox}";
+            order.text += $"\n{count}x {ConvertIndexToName(b.typeOfBox)}";
             if (comma < 2) order.text += ",";
             comma++;
         }
@@ -103,8 +122,11 @@ public class ProductOrderingMenu : MonoBehaviour
 
     public void UpdateBoxType(string newBoxType)
     {
+        Debug.Log(newBoxType);
         foreach (Box box in boxTypes)
         {
+
+            Debug.Log(box.typeOfBox);
             if (box.typeOfBox == newBoxType)
             {
                 boxToOrder.typeOfBox = newBoxType;
