@@ -104,8 +104,7 @@ public class ProductOrderingMenu : MonoBehaviour
             buttonsText[i].text = "Box o' " + names[i] + "\nPrice: $ " + prices[i];
         }
         label.text = "Select Box Type:\n" + ConvertIndexToName(boxToOrder.typeOfBox);
-        order.text = "Current Order:";
-        int comma = 0;
+        order.text = "Current Order";
         foreach (Box b in boxTypes)
         {
             int count = 0;
@@ -114,10 +113,8 @@ public class ProductOrderingMenu : MonoBehaviour
                 if (d.typeOfBox == b.typeOfBox) count++;
             }
             order.text += $"\n{count}x {ConvertIndexToName(b.typeOfBox)}";
-            if (comma < 2) order.text += ",";
-            comma++;
         }
-        pricing.text = $"Total Price:\n$ {totalPrice}";
+        pricing.text = $"Total Price\n$ {totalPrice}";
     }
 
     public void UpdateBoxType(string newBoxType)
