@@ -106,7 +106,6 @@ public class PalletZoneTracker : MonoBehaviour
 
         GameObject obj = Instantiate(palletPrefab, spawnPos, Quaternion.Euler(0, 90, 0));
         try { obj.tag = "Pallet"; } catch { }
-        obj.layer = LayerMask.NameToLayer("Pallet");
 
         Pallet p = obj.GetComponent<Pallet>();
         if (p == null) p = obj.AddComponent<Pallet>();
