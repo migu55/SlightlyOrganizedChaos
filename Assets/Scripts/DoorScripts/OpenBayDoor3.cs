@@ -434,7 +434,7 @@ public class OpenBayDoor3 : MonoBehaviour, Interactable
 				}
 
 				PalletZoneTracker sender = truck.GetComponent<PalletZoneTracker>();
-				if (sender != null && sender.availablePallets.Count == 0)
+				if (sender != null && sender.GetTotalPalletsInZones() == 0)
 				{
 					SpawnerZone?.GetComponent<TruckToDisplay>()?.missionDisplay?.GetComponent<MissionDisplayController>()?.SetCloseDoorDisplay();
 				}
