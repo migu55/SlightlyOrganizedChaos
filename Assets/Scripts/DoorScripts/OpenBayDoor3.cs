@@ -46,8 +46,47 @@ public class OpenBayDoor3 : MonoBehaviour, Interactable
         {
             SFXController.Instance.PlayClip(SFXController.Instance.doorMoved);
             doorAnimator.Play(openState);
+            if (!IsTruckInSpawnerZone())
+            {
+	            SpawnerZone?.GetComponent<TruckToDisplay>()?.missionDisplay?.GetComponent<MissionDisplayController>()?.SetCloseDoorDisplay();
+            }
             isOpen = true;
         }
+    }
+    
+    private bool IsTruckInSpawnerZone()
+    {
+	    if (SpawnerZone == null) return false;
+	    Collider zoneCollider = SpawnerZone.GetComponent<Collider>();
+	    if (zoneCollider == null) return false;
+
+	    Vector3 pad = Vector3.one * 0.1f;
+	    Vector3 extents = zoneCollider.bounds.extents + pad;
+	    Collider[] hits = Physics.OverlapBox(zoneCollider.bounds.center, extents, zoneCollider.transform.rotation, ~0, QueryTriggerInteraction.Collide);
+	    foreach (var hit in hits)
+	    {
+		    if (hit == null) continue;
+		    Transform t = hit.transform;
+		    while (t != null && !t.CompareTag("Truck")) t = t.parent;
+		    if (t != null && t.CompareTag("Truck")) return true;
+	    }
+
+	    // Fallback: check TruckReceiver components for bounds intersection
+	    var receivers = GameObject.FindObjectsOfType<TruckReceiver>();
+	    foreach (var rec in receivers)
+	    {
+		    if (rec == null || rec.gameObject == null || !rec.gameObject.activeInHierarchy) continue;
+		    Collider[] childColliders = rec.GetComponentsInChildren<Collider>(true);
+		    foreach (var c in childColliders)
+		    {
+			    if (c == null) continue;
+			    if (c.bounds.Intersects(zoneCollider.bounds)) return true;
+		    }
+		    Renderer r = rec.GetComponentInChildren<Renderer>();
+		    if (r != null && r.bounds.Intersects(zoneCollider.bounds)) return true;
+	    }
+
+	    return false;
     }
 
     // Call this method to close the door
@@ -75,6 +114,7 @@ public class OpenBayDoor3 : MonoBehaviour, Interactable
         {
             SFXController.Instance.PlayClip(SFXController.Instance.doorMoved);
             doorAnimator.Play(closeState);
+            SpawnerZone?.GetComponent<TruckToDisplay>()?.missionDisplay?.GetComponent<MissionDisplayController>()?.ClearMissionTruck();
             isOpen = false;
         }
     }
