@@ -24,13 +24,11 @@ public class TruckSpawnerManager : MonoBehaviour
     public void IncrementReceiversSent()
     {
         receiversSent++;
-        Debug.Log($"TruckSpawnerManager: IncrementReceiversSent -> receiversSent={receiversSent}");
     }
 
     public void DecrementReceiversSent()
     {
         receiversSent--;
-        Debug.Log($"TruckSpawnerManager: DecrementReceiversSent -> receiversSent={receiversSent}");
     }
 
     // Queue for backed up trucks (stores box list, sendMode, and missionId)
@@ -197,7 +195,6 @@ public class TruckSpawnerManager : MonoBehaviour
             // don't bypass the queued/spawn-limit logic and create more receive trucks than allowed.
             if (!sendMode && ReceiversSent >= receiverLimit)
             {
-                Debug.Log($"TruckSpawnerManager: Receiver limit reached ({ReceiversSent}/{receiverLimit}); enqueueing receive-mode truck missionId={missionId}.");
                 backedUpTrucks.Enqueue((new List<BoxData>(box), sendMode, missionId));
             }
             else
@@ -227,7 +224,6 @@ public class TruckSpawnerManager : MonoBehaviour
     // Diagnostic: log incoming spawn requests at the List<BoxData> entry point
     public void spawnTruck_Diagnostic(int missionId, List<BoxData> box, bool sendMode)
     {
-        Debug.Log($"TruckSpawnerManager.spawnTruck_Diagnostic called: missionId={missionId}, boxCount={(box==null?0:box.Count)}, sendMode={sendMode}");
         spawnTruck(missionId, box, sendMode);
     }
 
@@ -237,11 +233,9 @@ public class TruckSpawnerManager : MonoBehaviour
     // ----------------------------------------------------------------------
     private void InstantiateTruckInZone(Collider targetZone, List<PalletData> pallets, bool sendMode, int missionId = -1)
     {
-        Debug.Log($"InstantiateTruckInZone: targetZone={(targetZone==null?"null":targetZone.name)}, palletsCount={(pallets==null?0:pallets.Count)}, sendMode={sendMode}, missionId={missionId}");
 
         if (truckPrefab == null)
         {
-            Debug.LogError("InstantiateTruckInZone: truckPrefab is null on TruckSpawnerManager. Cannot instantiate truck.");
             return;
         }
 
@@ -269,7 +263,6 @@ public class TruckSpawnerManager : MonoBehaviour
         GameObject truckObj = Instantiate(truckPrefab, spawnPos, spawnRot);
         if (truckObj == null)
         {
-            Debug.LogError("InstantiateTruckInZone: Instantiate returned null for truckPrefab.");
             return;
         }
 
@@ -290,11 +283,6 @@ public class TruckSpawnerManager : MonoBehaviour
                 zoneTracker.RefreshZones();
                 targetZone.gameObject.GetComponent<TruckToDisplay>()?.missionDisplay
                     .GetComponent<MissionDisplayController>()?.SetRecieveTruck(truckObj);
-                Debug.Log($"InstantiateTruckInZone: zoneTracker present. after RefreshZones: GetPalletCountInZone={zoneTracker.GetPalletCountInZone(targetZone)}, availablePending={(zoneTracker.availablePallets==null?0:zoneTracker.availablePallets.Count)}");
-            }
-            else
-            {
-                Debug.LogWarning("PalletZoneTracker not found on truckPrefab instance (send-mode truck). Expected a PalletZoneTracker to manage pallets.");
             }
         }
         else
@@ -313,23 +301,16 @@ public class TruckSpawnerManager : MonoBehaviour
                 truckReceiver.SetExpectedPallets(pallets);
                 targetZone.gameObject.GetComponent<TruckToDisplay>()?.missionDisplay
                     .GetComponent<MissionDisplayController>()?.SetMissionTruck(truckObj);
-                Debug.Log($"InstantiateTruckInZone: TruckReceiver present. missionId={truckReceiver.missionId}");
-            }
-            else
-            {
-                Debug.LogWarning("TruckReceiver not found on truckPrefab instance (receive-mode). Expected a TruckReceiver to accept pallets.");
             }
         }
 
         var gotReceiver = truckObj.GetComponent<TruckReceiver>() != null;
         var gotPZT = truckObj.GetComponent<PalletZoneTracker>() != null;
-        Debug.Log($"InstantiateTruckInZone: Spawned truck '{truckObj.name}' components => TruckReceiver={gotReceiver}, PalletZoneTracker={gotPZT}");
     }
 
 	public void clearQueue(){
 		int cleared = backedUpTrucks.Count;
 		backedUpTrucks.Clear();
-		Debug.Log($"TruckSpawnerManager: clearQueue called -> cleared {cleared} pending truck(s).");
 	}
 
 	// Removes any queued truck entries that match the provided missionId, then calls
@@ -357,13 +338,11 @@ public class TruckSpawnerManager : MonoBehaviour
 
 		// Replace the queue with the filtered one
 		backedUpTrucks = newQueue;
-		Debug.Log($"TruckSpawnerManager: RemoveQueuedMissionAndSubmit -> removed {removed} queued truck(s) for missionId={missionId}.");
 
 		// Find the MissionBehavior in the scene and report the mission with an empty box list
 		var missionBehavior = FindObjectOfType<MissionBehavior>();
 		if (missionBehavior == null)
 		{
-			Debug.LogWarning("TruckSpawnerManager: MissionBehavior not found in scene. Cannot call receiveMission.");
 			return;
 		}
 

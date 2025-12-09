@@ -544,7 +544,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   triggered: 0
-  player: {fileID: 8560633046323944863, guid: 583c1b6531b6b4c8ab66a4a0301d49c2, type: 3}
+  player:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!114 &4609596982566900336
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -572,6 +575,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotateSpeed: 1
+  lowSpeedBoost: 4
+  boostEndSpeed: 3
   audioController: {fileID: 6880003529349598990}
   cameraDistance: 20
 --- !u!1 &5061242469012373245

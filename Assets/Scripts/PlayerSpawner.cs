@@ -18,7 +18,6 @@ public class PlayerSpawner : MonoBehaviour
         sb.AppendLine("Detected input devices:");
         foreach (var d in UnityEngine.InputSystem.InputSystem.devices)
             sb.AppendLine($"  [{d.deviceId}] {d.displayName} ({d.layout})");
-        Debug.Log(sb.ToString());
 
         // Pick the first suitable device (Gamepad or Joystick)
         UnityEngine.InputSystem.InputDevice chosenDevice = null;
@@ -34,12 +33,7 @@ public class PlayerSpawner : MonoBehaviour
         if (chosenDevice != null)
         {
             var pim = GetComponent<PlayerInputManager>();
-            pim.JoinPlayer(-1, -1 , "Player", chosenDevice);
-            Debug.Log($"Joined player with device: {chosenDevice.displayName}");
-        }
-        else
-        {
-            Debug.Log("No suitable input device found to join player.");
+            pim.JoinPlayer(-1, -1 , null, chosenDevice);
         }
     }
 

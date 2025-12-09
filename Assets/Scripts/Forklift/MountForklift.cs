@@ -32,19 +32,16 @@ public class MountForklift : MonoBehaviour, Interactable
     {
         if(mounted && this.player != player)
         {
-            Debug.Log("Forklift already mounted by another player");
             return;
         }
         this.player = player;
         this.playerCamera = playerCamera;
 
-        Debug.Log("Mounting or Dismounting");
         if (!mounted)
         {
             var pickupController = player.GetComponentInChildren<PickUpController>();
             if (pickupController == null)
             {
-                Debug.Log("Getting on forklift");
                 Mount();
             }
         }
@@ -56,7 +53,6 @@ public class MountForklift : MonoBehaviour, Interactable
 
     private void Mount()
     {
-        Debug.Log("Mounting");
         audioController.PlayEngineStart();
         //Setting the forklift camera to the active camera and turning off the player camera
         forkliftCamera.rect = playerCamera.rect;
@@ -87,7 +83,6 @@ public class MountForklift : MonoBehaviour, Interactable
         audioController.StopEngineIdle();
         audioController.PlayEngineStop();
         //enabling the player camera and disabling the forklift camera
-        Debug.Log("Dismounting");
         playerCamera.enabled = true;
         forkliftCamera.enabled = false;
         forkliftRigidbody.isKinematic = true;

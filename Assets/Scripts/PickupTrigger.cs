@@ -8,14 +8,11 @@ public class PickupTrigger : MonoBehaviour
     {
         if (pickupController == null)
             pickupController = GetComponentInParent<ForkliftPickup>();
-
-        Debug.Log(pickupController);
     }
 
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("Pallet in Trigger");
         pickupController?.OnTriggerEnterFork(other);
     }
 

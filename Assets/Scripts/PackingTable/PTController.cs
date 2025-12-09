@@ -104,7 +104,6 @@ public class PTController : MonoBehaviour
                 currentBoxType = boxPrefabC;
                 break;
             default:
-                Debug.Log("Incorrect Type Detected: Swapping from " + type + " to A.");
                 currentBoxType = boxPrefabA;
                 break;
         }
@@ -138,7 +137,6 @@ public class PTController : MonoBehaviour
             SFXController.Instance.PlayClip(SFXController.Instance.palletDestroyed);
         } else
         {
-            Debug.Log("Calling Delete Box");
             palletData.deleteBoxFromZone();
             StartCoroutine(DelayBoxProcessing()); //delays so all of the boxes dont immediately expel themselves from the pallet
         }

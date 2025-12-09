@@ -1,24 +1,26 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 
 // To be placed on the forklift
 public class TriggerDetector : MonoBehaviour
 {
     public bool triggered = false;
-    public GameObject player;
+    public List<GameObject> player;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-
+        player = new List<GameObject>();
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (!triggered && other.gameObject.tag == "Player")
+        if (other.gameObject.tag == "Player")
         {
-            Debug.Log("Player entered trigger");
-            triggered = true;
-            player = other.gameObject;
+                triggered = true;
+                if(!player.Contains(other.gameObject)) {
+                    player.Add(other.gameObject);
+                }
         }
     }
 
@@ -26,8 +28,8 @@ public class TriggerDetector : MonoBehaviour
     {
         if (triggered && other.gameObject.tag == "Player")
         {
-            triggered = false;
-            player = null;
+            player.Remove(other.gameObject);
+            if(player.Count == 0) triggered = false;
         }
     }
 

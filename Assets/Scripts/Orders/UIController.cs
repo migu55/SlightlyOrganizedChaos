@@ -86,7 +86,6 @@ public class UIController : MonoBehaviour
         // If this UIItem represents a box type selection, update the menu selection
         if (!string.IsNullOrEmpty(current.boxType))
         {
-            Debug.Log(current);
             current.menu.UpdateBoxType(current.boxType);
         }
         else

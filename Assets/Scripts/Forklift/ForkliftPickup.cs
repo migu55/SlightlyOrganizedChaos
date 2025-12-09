@@ -42,7 +42,6 @@ public class ForkliftPickup : MonoBehaviour
         {
             forkRb = forkTransform.gameObject.AddComponent<Rigidbody>();
             forkRb.isKinematic = true; // kinematic so it moves with script, not physics
-            Debug.Log("Added kinematic Rigidbody to forks");
         }
 
         // Create a ConfigurableJoint on the pallet
@@ -99,7 +98,6 @@ public class ForkliftPickup : MonoBehaviour
         currentJoint.breakForce = breakForce;
         currentJoint.breakTorque = breakForce;
 
-        Debug.Log($"Pallet attached to forklift with ConfigurableJoint (spring: {attachSpring}, damping: {attachDamping})");
     }
 
     /// <summary>
@@ -114,7 +112,6 @@ public class ForkliftPickup : MonoBehaviour
         }
 
         currentPallet = null;
-        Debug.Log("Pallet detached from forklift");
     }
 
     /// <summary>
@@ -139,7 +136,6 @@ public class ForkliftPickup : MonoBehaviour
 
         if (other.attachedRigidbody == currentPallet)
         {
-            Debug.Log("Pallet exited fork trigger, detaching");
             DetachPallet();
         }
     }

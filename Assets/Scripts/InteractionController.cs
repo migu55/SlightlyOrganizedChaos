@@ -46,21 +46,19 @@ public class InteractionController : MonoBehaviour
 
         if (playerInput == null)
         {
-            Debug.LogWarning("No matching PlayerInput found for this interaction.");
             return;
         }
 
         var playerController = playerInput.GetComponent<PlayerController>();
         if (playerController == null)
         {
-            Debug.LogWarning("No PlayerController found on PlayerInput object.");
             return;
         }
 
         var playerObj = playerController.gameObject;
 
         // Only run if the detector is triggered
-        if (detector.triggered && detector.player == playerObj)
+        if (detector.triggered && detector.player.Contains(playerObj))
         {
             var interactable = GetComponent<Interactable>();
             if (interactable != null)

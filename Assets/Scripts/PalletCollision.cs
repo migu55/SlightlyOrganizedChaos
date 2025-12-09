@@ -13,7 +13,6 @@ public class PalletCollision : MonoBehaviour
 
     public void OnCollisionEnter(Collision collision)
     {
-        Debug.Log("Pallet Collision with " + collision.gameObject.name);
         if(collision.gameObject.CompareTag("Player"))
         {
             rb.isKinematic = true;
@@ -22,7 +21,6 @@ public class PalletCollision : MonoBehaviour
 
     public void OnCollisionExit(Collision collision)
     {
-        Debug.Log("Pallet Collision Exit with " + collision.gameObject.name);
         if(collision.gameObject.CompareTag("Player"))
         {
             rb.isKinematic = false;

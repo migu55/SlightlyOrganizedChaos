@@ -10,6 +10,7 @@ public class MissionDisplayController : MonoBehaviour
 
     public GameObject[] productRequirements;
     public GameObject receiveDisplay;
+    public GameObject closeDoorDisplay;
 
     private MissionData missionData;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -20,9 +21,9 @@ public class MissionDisplayController : MonoBehaviour
 
     public void SetMissionTruck(GameObject truck)
     {
+        orderNumber.SetActive(true);
         missionTruck = truck;
         missionData = missionManager.GetComponent<MissionBehavior>().getMissionWithMissionID(truck.GetComponent<TruckReceiver>().missionId);
-        //Debug.Log("Mission truck set to: " + truck.GetComponent<TruckReceiver>().missionId + " Expected pallets: " + missionData.MissionQuantities[0] + ", " + missionData.MissionQuantities[1] + ", " + missionData.MissionQuantities[2]);
 
         var receiver = missionTruck.GetComponent<TruckReceiver>();
         string idText = "Order Number: " + (receiver != null ? receiver.missionId.ToString() : "");
@@ -69,7 +70,6 @@ public class MissionDisplayController : MonoBehaviour
                     }
                 }
 
-                Debug.LogWarning("Product requirement GameObject '" + reqGO.name + "' has no supported text component.");
             }
         }
 
@@ -86,11 +86,17 @@ public class MissionDisplayController : MonoBehaviour
 
 
 
-        Debug.LogWarning("OrderNumber has no supported text component (UnityEngine.UI.Text or TextMeshProUGUI).");
     }
 
     public void SetRecieveTruck(GameObject truck) {
+        orderNumber.SetActive(false);
         receiveDisplay.SetActive(true);
+    }
+
+    public void SetCloseDoorDisplay() {
+        orderNumber.SetActive(false);
+        closeDoorDisplay.SetActive(true);
+        receiveDisplay.SetActive(false);
     }
 
 
@@ -111,6 +117,7 @@ public class MissionDisplayController : MonoBehaviour
             }
         }
         receiveDisplay.SetActive(false);
+        closeDoorDisplay.SetActive(false);
     }
 
     // Update is called once per frame

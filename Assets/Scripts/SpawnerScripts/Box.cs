@@ -14,10 +14,6 @@ public class Box : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (audioTriggered)
-        {
-            Debug.Log("Blocked");
-        }
 
         if (!audioTriggered && gameObject.tag == "Box" && collision.gameObject.tag != "Pallet")
         {
@@ -39,7 +35,6 @@ public class Box : MonoBehaviour
 
     IEnumerator ResetTrigger()
     {
-        Debug.Log("Resetting");
         yield return new WaitForSeconds(1f);
         audioTriggered = false;
     }

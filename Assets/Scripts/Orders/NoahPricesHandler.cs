@@ -52,8 +52,6 @@ public class NoahPricesHandler : MonoBehaviour
             int min, max;
             min = (int)Math.Min(Math.Floor(roundTime / 60) * 20, 60);
             max = (int)Math.Min((Math.Floor(roundTime / 60) * 20) + 20, 100);
-            Debug.Log("Min: " + min);
-            Debug.Log("Max: " + max);
             if (min < 5) min = 5;
             for (int i = 0; i < newPrices.Count; i++)
             {

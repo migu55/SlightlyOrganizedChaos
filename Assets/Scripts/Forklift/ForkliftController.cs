@@ -7,6 +7,8 @@ public class ForkliftController : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public float rotateSpeed = 1;
+    public float lowSpeedBoost = 4f; // extra shove when starting under load
+    public float boostEndSpeed = 3f; // fade boost out by this speed (m/s)
 
     public ForkliftAudioController audioController;
     private float movement;
@@ -132,6 +134,14 @@ public class ForkliftController : MonoBehaviour
     void FixedUpdate()
     {
         Vector3 moveDir = new Vector3(0, 0, movement);
+        Vector3 flatVel = rb.linearVelocity; flatVel.y = 0f;
+        float flatSpeed = flatVel.magnitude;
+
+        // scale input for extra torque at low speed; returns to normal past boostEndSpeed
+        float boost = flatSpeed < boostEndSpeed
+            ? Mathf.Lerp(lowSpeedBoost, 1f, flatSpeed / Mathf.Max(0.01f, boostEndSpeed))
+            : 1f;
+        Vector3 boostedMove = moveDir * boost;
 
         // steer rear wheels based on horizontal rotation input
         float maxWheelSteer = 30f; // degrees
@@ -154,7 +164,7 @@ public class ForkliftController : MonoBehaviour
             rearRightWheel.transform.localRotation = Quaternion.Euler(rearRightSpinAngle, rearRightSteerAngle, 0f);
         }
 
-        rb.AddForce(transform.TransformDirection(moveDir), ForceMode.VelocityChange);
+        rb.AddForce(transform.TransformDirection(boostedMove), ForceMode.VelocityChange);
         audioController.ChangeEngineIdlePitch(0.5f + Mathf.Abs(movement) * 0.5f);
 
         // use local forward velocity to determine direction and wheel rotation
@@ -178,7 +188,6 @@ public class ForkliftController : MonoBehaviour
             Vector3 newPosition = forks.transform.localPosition + lifting;
             newPosition.y = Mathf.Clamp(newPosition.y, 2.2f, 8f);
             forks.transform.localPosition = newPosition;
-            Debug.Log(lifting);
             if(lifting.y > 0)
             {
                 audioController.PlayForkLiftSound();

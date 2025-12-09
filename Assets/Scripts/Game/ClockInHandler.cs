@@ -77,7 +77,6 @@ public class ClockInHandler : MonoBehaviour, Interactable
 
     public void AddNewPlayer(GameObject player)
     {
-        Debug.Log($"Detected player {player.name}, adding to lists...");
         PlayerInput input = player.GetComponent<PlayerInput>();
         if (GameStats.Instance.allPlayersReady)
         {
@@ -87,7 +86,6 @@ public class ClockInHandler : MonoBehaviour, Interactable
             playersReady.Add(false);
         }
         playerIndexes.Add(input.playerIndex);
-        Debug.Log($"Player {input.name} Joined: GameObject = ${input.gameObject.name}.\nAdded to index {playerIndexes.IndexOf(input.playerIndex)} of playerIndexes");
     }
 
     public void Interact(GameObject interactor)
@@ -98,13 +96,6 @@ public class ClockInHandler : MonoBehaviour, Interactable
             playersReady[index] = !playersReady[index];
             StopAllCoroutines();
             StartCoroutine(ReadyUnreadyCoroutine(index));
-        }
-        if (playersReady[index])
-        {
-            Debug.Log("Player Ready");
-        } else
-        {
-            Debug.Log("Player Unready");
         }
     }
 
@@ -136,7 +127,6 @@ public class ClockInHandler : MonoBehaviour, Interactable
         {
             if (!readyTexts.Contains(t.GetComponent<TextMeshPro>()))
             {
-                Debug.Log($"Found text mesh {t.name}, adding to list...");
                 readyTexts.Add(t.GetComponent<TextMeshPro>());
             }
         }

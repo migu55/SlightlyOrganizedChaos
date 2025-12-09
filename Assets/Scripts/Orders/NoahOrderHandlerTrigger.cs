@@ -46,7 +46,6 @@ public class NoahOrderHandlerTrigger : MonoBehaviour, Interactable
     {
         if (!playerObj.TryGetComponent<NoahOrderHandlerPlayer>(out var orderHandler))
         {
-            Debug.LogWarning("Failed to find player order handler when interacting with laptop");
             return;
         }
 

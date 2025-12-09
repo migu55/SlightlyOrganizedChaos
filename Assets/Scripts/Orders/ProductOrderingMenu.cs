@@ -69,7 +69,6 @@ public class ProductOrderingMenu : MonoBehaviour
             case "C":
                 return names[2];
             default:
-                Debug.Log("Cooked");
                 return names[0];
         }
     }
@@ -119,11 +118,9 @@ public class ProductOrderingMenu : MonoBehaviour
 
     public void UpdateBoxType(string newBoxType)
     {
-        Debug.Log(newBoxType);
         foreach (Box box in boxTypes)
         {
 
-            Debug.Log(box.typeOfBox);
             if (box.typeOfBox == newBoxType)
             {
                 boxToOrder.typeOfBox = newBoxType;
@@ -165,12 +162,10 @@ public class ProductOrderingMenu : MonoBehaviour
             totalPrice += prices[index];
         }
         UpdateText();
-        Debug.Log($"ProductOrderingMenu.AddToOrder: Added {count} x '{boxToOrder.typeOfBox}' to basket (total={orderBasket.Count}).");
     }
 
     public void ClearOrder()
     {
-        Debug.Log("Clear Order");
         orderBasket.Clear();
         UpdateText();
     }
@@ -202,7 +197,6 @@ public class ProductOrderingMenu : MonoBehaviour
             for (int i = 0; i < count; i++) boxesToSend.Add(new BoxData() { typeOfBox = boxToOrder.typeOfBox });
         }
 
-        Debug.Log($"ProductOrderingMenu.PlaceOrder: Sending {boxesToSend.Count} boxes to spawner. (basketBeforeClear={ (orderBasket==null?0:orderBasket.Count) })");
         // use diagnostic entry to get extra logging from the spawner
         spawner.spawnTruck_Diagnostic(-1, boxesToSend, true);
 
@@ -214,11 +208,9 @@ public class ProductOrderingMenu : MonoBehaviour
         {
             if (p.GetComponent<NoahOrderHandlerPlayer>().isMenuOpen)
             {
-                Debug.Log("Player in menu, closing...");
                 menuButton.OpenOrCloseMenu(p);
             }
         }
         SFXController.Instance.PlayClip(SFXController.Instance.orderPlaced);
-        Debug.Log("ProductOrderingMenu.PlaceOrder: Cleared order basket after sending.");
     }
 }
