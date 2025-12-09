@@ -26,6 +26,7 @@ public class PTLever : MonoBehaviour, Interactable
 
     public void Interact(GameObject interactor)
     {
+        SFXController.Instance.PlayClip(SFXController.Instance.doorClicked);
         ptc.isLoading = !ptc.isLoading;
 
         if (ptc.isLoading)
