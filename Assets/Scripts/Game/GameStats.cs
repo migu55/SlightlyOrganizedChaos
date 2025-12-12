@@ -15,9 +15,9 @@ public class GameStats : MonoBehaviour
 
     public int gamePreviousRoundBalance = 500;
 
-    public bool inRoundScreen = false;
-    public bool allPlayersReady = false;
-    public bool gameStarted = false;
+    public bool inRoundScreen = false; //between rounds
+    public bool allPlayersReady = false; //handles readyup
+    public bool gameStarted = false; //after first readyup
 
     void Awake()
     {

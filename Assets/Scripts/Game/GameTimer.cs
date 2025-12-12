@@ -16,7 +16,7 @@ public class GameTimer : MonoBehaviour
     void Update()
     {
 
-        if (GameStats.Instance.gameTime > 0 && GameStats.Instance.allPlayersReady) //replace true with readyup mechanic from noah
+        if (GameStats.Instance.gameTime > 0 && GameStats.Instance.allPlayersReady)
         {
             GameStats.Instance.gameTime -= Time.deltaTime;
         }

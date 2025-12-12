@@ -22,9 +22,6 @@ public class MissionBehavior : MonoBehaviour
 
     public TruckSpawnerManager truckSpawnerManager;
 
-    //Debug
-    public TMP_InputField debugMissionIDInput;
-
     public GameObject spawnMission(MissionData m)
     {
         GameObject baseUI = Instantiate(MissionUIPrefab, missionUIParentTransform, false);
@@ -72,7 +69,7 @@ public class MissionBehavior : MonoBehaviour
         createMission(null);
     }
 
-    public void createMission(MissionData mDetails)
+    public void createMission(MissionData mDetails) //overload for tutorial mission
     {
         if (mDetails != null && activeMissions.FirstOrDefault(m => m.id == mDetails.id) != null) return;
 
@@ -88,31 +85,17 @@ public class MissionBehavior : MonoBehaviour
             mData = mDetails;
         }
 
-        if (mData.time > GameStats.Instance.gameTime)
+        if (mData.time > GameStats.Instance.gameTime) //prevents time going over the total mission time
         {
             mData.time = GameStats.Instance.gameTime;
         }        
 
-        spawnMission(mData);
+        spawnMission(mData); //missionUI
         activeMissions.Add(mData);
         GameStats.Instance.roundNumMissions++;
         SFXController.Instance.PlayClip(SFXController.Instance.missionSpawned);
-        truckSpawnerManager.spawnTruck(mData.id, false);
-        //Destroy(mission);
+        truckSpawnerManager.spawnTruck(mData.id, false); //send mission information to truck
     }
-
-    //public void DebugDeleteMission()
-    //{
-    //    int m;
-    //    if (int.TryParse(debugMissionIDInput.text, out m))
-    //    {
-    //        removeMission(m);
-    //    } else
-    //    {
-    //        Debug.Log("Invalid Entry");
-    //    }
-    //    debugMissionIDInput.text = string.Empty;
-    //}
 
     public void removeMission(int MissionID)
     {
@@ -122,7 +105,7 @@ public class MissionBehavior : MonoBehaviour
             activeMissions.Remove(m);
         }
  
-        GameObject found = FindObjectsOfType<Mission>().FirstOrDefault(o => o.id == MissionID)?.gameObject;
+        GameObject found = FindObjectsOfType<Mission>().FirstOrDefault(o => o.id == MissionID)?.gameObject; //destroy UI element
         if (found != null)
         {
             Destroy(found);
@@ -136,7 +119,7 @@ public class MissionBehavior : MonoBehaviour
         if (found != null)
         {
             MissionTimer core = found.GetComponent<MissionTimer>();
-            core.UpdateQuotas(qty);
+            core.UpdateQuotas(qty); //send info to missionUI
         }
     }
 
@@ -146,7 +129,7 @@ public class MissionBehavior : MonoBehaviour
         receiveMission(missionID, submitted, true);
     }
 
-    public int[] BoxDataToIntArray(List<BoxData> data)
+    public int[] BoxDataToIntArray(List<BoxData> data) //global converter helper
     {
         if (data == null) return null;
 
@@ -318,8 +301,6 @@ public class MissionBehavior : MonoBehaviour
         roundActive = false;
         SFXController.Instance.PlayClip(SFXController.Instance.roundEndWhistle);
         yield return new WaitForSeconds(1);
-        //activeMissions.Clear();
-        //missionIntervals.Clear();
     }
 
     void Awake()
