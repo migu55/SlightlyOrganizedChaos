@@ -1,26 +1,34 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using TMPro;
 using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
 
+/// <summary>
+/// Manages automatic player spawning for multiplayer setup.
+/// Detects connected input devices (gamepads/joysticks) and automatically spawns players using PlayerInputManager.
+/// Useful for testing multiplayer scenarios without manual player joining.
+/// </summary>
 public class PlayerSpawner : MonoBehaviour
 {
-
+    // Player prefab to spawn (set in inspector)
     public GameObject playerPrefab;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    
+    /// <summary>
+    /// Called on first frame. Detects input devices and automatically spawns the first player
+    /// with the first available gamepad or joystick device.
+    /// </summary>
     void Start()
     {
-        // Gather device lists (Input System devices) and log/display them
+        // Build and log a list of all detected input devices for debugging
         var sb = new System.Text.StringBuilder();
         sb.AppendLine("Detected input devices:");
         foreach (var d in UnityEngine.InputSystem.InputSystem.devices)
             sb.AppendLine($"  [{d.deviceId}] {d.displayName} ({d.layout})");
         Debug.Log(sb.ToString());
 
-        // Pick the first suitable device (Gamepad or Joystick)
+        // Find the first suitable controller device (gamepad or joystick)
         UnityEngine.InputSystem.InputDevice chosenDevice = null;
         foreach (var d in UnityEngine.InputSystem.InputSystem.devices)
         {
@@ -31,9 +39,12 @@ public class PlayerSpawner : MonoBehaviour
             }
         }
 
+        // If a suitable device was found, automatically spawn a player with it
         if (chosenDevice != null)
         {
             var pim = GetComponent<PlayerInputManager>();
+            
+            // Join player: -1 = auto-assign split screen, -1 = auto control scheme, "Player" = action map
             pim.JoinPlayer(-1, -1 , "Player", chosenDevice);
             Debug.Log($"Joined player with device: {chosenDevice.displayName}");
         }
