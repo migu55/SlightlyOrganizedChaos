@@ -54,7 +54,7 @@ public class SFXController : MonoBehaviour
         PlayClip(clip, false);
     }
 
-    // Play SFX in 2D
+    // Play Random Pitch for repeated actions
     public void PlayClip(AudioClip clip, bool randomPitch)
     {
         if (clip == null) return;
@@ -70,11 +70,4 @@ public class SFXController : MonoBehaviour
             
     }
 
-    // Play SFX in 3D at a world position
-    public void PlayAt(AudioClip clip, Vector3 pos)
-    {
-        if (clip == null) return;
-
-        AudioSource.PlayClipAtPoint(clip, pos, 0.5f);
-    }
 }

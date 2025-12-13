@@ -1,5 +1,10 @@
 using UnityEngine;
 
+/// <summary>
+/// Manages pallet attachment to forklift forks using physics joints.
+/// Creates ConfigurableJoint connections with spring/damping to keep pallets stable during lifting and movement.
+/// Automatically attaches pallets when they enter the fork trigger zone.
+/// </summary>
 public class ForkliftPickup : MonoBehaviour
 {
     [Header("References")]
@@ -19,17 +24,28 @@ public class ForkliftPickup : MonoBehaviour
     [Tooltip("Max distance from fork anchor before joint breaks.")]
     public float maxDistance = 1f;
 
+    // Currently active joint connecting pallet to forks
     private ConfigurableJoint currentJoint;
+    
+    // Reference to the currently attached pallet's rigidbody
     private Rigidbody currentPallet;
 
+    /// <summary>
+    /// Checks if the forklift is currently carrying the specified pallet.
+    /// </summary>
+    /// <param name="pallet">The pallet rigidbody to check</param>
+    /// <returns>True if this pallet is currently attached to the forks</returns>
     public bool IsCarrying(Rigidbody pallet)
     {
         return currentPallet == pallet;
     }
 
     /// <summary>
-    /// Attaches a pallet using a spring joint, keeping it dynamic but tethered to the forks.
+    /// Attaches a pallet to the forks using a ConfigurableJoint with spring forces.
+    /// Creates a kinematic rigidbody on the forks if needed, then configures a joint
+    /// with limited movement and rotation to keep the pallet stable but physically realistic.
     /// </summary>
+    /// <param name="pallet">The pallet's rigidbody to attach</param>
     public void AttachPallet(Rigidbody pallet)
     {
         if (pallet == null || forkTransform == null) return;
@@ -40,40 +56,42 @@ public class ForkliftPickup : MonoBehaviour
         Rigidbody forkRb = forkTransform.GetComponent<Rigidbody>();
         if (forkRb == null)
         {
+            // Add kinematic rigidbody to forks - moves with animation/script, not affected by physics
             forkRb = forkTransform.gameObject.AddComponent<Rigidbody>();
+
             forkRb.isKinematic = true; // kinematic so it moves with script, not physics
         }
 
-        // Create a ConfigurableJoint on the pallet
+        // Create a ConfigurableJoint on the pallet GameObject
         currentJoint = pallet.gameObject.AddComponent<ConfigurableJoint>();
         currentJoint.connectedBody = forkRb;
 
-        // Configure motion - limited movement with spring tension
+        // Configure linear motion - limited movement with spring tension along all axes
         currentJoint.xMotion = ConfigurableJointMotion.Limited;
         currentJoint.yMotion = ConfigurableJointMotion.Limited;
         currentJoint.zMotion = ConfigurableJointMotion.Limited;
         
-        // Allow some rotation for realism but dampen it
+        // Allow some rotation for realism but keep it limited to prevent spinning
         currentJoint.angularXMotion = ConfigurableJointMotion.Limited;
         currentJoint.angularYMotion = ConfigurableJointMotion.Limited;
         currentJoint.angularZMotion = ConfigurableJointMotion.Limited;
 
-        // Set anchor point on pallet (center)
+        // Set anchor point on pallet at its center
         currentJoint.anchor = Vector3.zero;
         currentJoint.autoConfigureConnectedAnchor = true;
 
-        // Set linear limits
+        // Configure linear movement limits (how far pallet can drift from forks)
         var linearLimit = new SoftJointLimit { limit = maxDistance, bounciness = 0f };
         currentJoint.linearLimit = linearLimit;
 
-        // Set angular limits (small angles)
+        // Configure angular limits (restricts rotation to 5 degrees in all directions)
         var angularLimit = new SoftJointLimit { limit = 5f, bounciness = 0f };
         currentJoint.lowAngularXLimit = angularLimit;
         currentJoint.highAngularXLimit = angularLimit;
         currentJoint.angularYLimit = angularLimit;
         currentJoint.angularZLimit = angularLimit;
 
-        // Set spring parameters for tight connection
+        // Set spring parameters for position stability - pulls pallet toward fork position
         var spring = new JointDrive
         {
             positionSpring = attachSpring,
@@ -84,7 +102,7 @@ public class ForkliftPickup : MonoBehaviour
         currentJoint.yDrive = spring;
         currentJoint.zDrive = spring;
 
-        // Angular damping to prevent spinning
+        // Set angular spring at half strength to prevent spinning while allowing natural settling
         var angularSpring = new JointDrive
         {
             positionSpring = attachSpring * 0.5f,
@@ -94,33 +112,40 @@ public class ForkliftPickup : MonoBehaviour
         currentJoint.angularXDrive = angularSpring;
         currentJoint.angularYZDrive = angularSpring;
 
-        // Set break force/torque
+        // Set break thresholds - joint breaks if forces/torques exceed these values
         currentJoint.breakForce = breakForce;
         currentJoint.breakTorque = breakForce;
 
     }
 
     /// <summary>
-    /// Detaches the pallet by destroying the joint and restoring physics.
+    /// Detaches the currently attached pallet by destroying the joint.
+    /// The pallet becomes fully physics-driven again after detachment.
     /// </summary>
     public void DetachPallet()
     {
+        // Destroy the joint component if it exists
         if (currentJoint != null)
         {
             Destroy(currentJoint);
             currentJoint = null;
         }
 
+        // Clear pallet reference
         currentPallet = null;
     }
 
     /// <summary>
-    /// Called by trigger or interaction system when pallet enters fork zone.
+    /// Trigger callback when a collider enters the fork zone.
+    /// Automatically attaches pallets that enter if nothing is currently attached.
     /// </summary>
+    /// <param name="other">The collider that entered the trigger zone</param>
     public void OnTriggerEnterFork(Collider other)
     {
-        if (currentJoint != null) return; // already carrying something
+        // Don't attach if already carrying something
+        if (currentJoint != null) return;
 
+        // Check if the entering object is a pallet with a rigidbody
         if (other.attachedRigidbody != null && other.CompareTag("Pallet"))
         {
             AttachPallet(other.attachedRigidbody);
@@ -128,12 +153,15 @@ public class ForkliftPickup : MonoBehaviour
     }
 
     /// <summary>
-    /// Called by trigger or interaction system when pallet exits fork zone.
+    /// Trigger callback when a collider exits the fork zone.
+    /// Detaches the pallet if it's the currently attached one leaving the zone.
     /// </summary>
+    /// <param name="other">The collider that exited the trigger zone</param>
     public void OnTriggerExitFork(Collider other)
     {
         if (currentPallet == null) return;
 
+        // Detach if the exiting object is the currently attached pallet
         if (other.attachedRigidbody == currentPallet)
         {
             DetachPallet();

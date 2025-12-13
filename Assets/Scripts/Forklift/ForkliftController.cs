@@ -3,52 +3,90 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+
+/// <summary>
+/// Controls forklift movement, steering, camera, and fork operations.
+/// Manages physics-based movement with rear-wheel steering, fork lifting/tilting,
+/// camera zoom/obstruction detection, and wheel rotation animations.
+/// </summary>
 public class ForkliftController : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    // Camera rotation sensitivity
     public float rotateSpeed = 1;
     public float lowSpeedBoost = 4f; // extra shove when starting under load
     public float boostEndSpeed = 3f; // fade boost out by this speed (m/s)
 
+    // Reference to audio controller for engine and hydraulic sounds
     public ForkliftAudioController audioController;
+    
+    // Current movement input (-1 to 1, forward/backward)
     private float movement;
+    
+    // Current steering input (x = steering, y unused)
     private Vector2 rotation;
 
+    // Calculated lifting movement for this frame
     private Vector3 lifting;
+    
+    // Calculated tilting movement for this frame
     private Vector3 tilting;
 
+    // Camera mouse/stick delta for rotation
     private Vector2 camDelta;
+    
+    // Current zoom input value
     private float zoomAmount;
-    // the user's requested zoom distance (positive)
+    
+    // User's requested zoom distance (positive value)
     private float targetCameraDistance;
-    // the camera's actual distance after obstruction clamping and smoothing
+    
+    // Camera's actual distance after obstruction clamping and smoothing
     private float actualCameraDistance;
+    
+    // Maximum camera distance from forklift
     public float cameraDistance = 20f;
+    
+    // Camera pivot point that rotates with mouse input
     private GameObject RotatePoint;
+    
+    // The forklift's camera component
     private GameObject forkliftCamera;
+    
+    // The fork assembly GameObject that lifts and tilts
     private GameObject forks;
+    
+    // Individual wheel GameObjects for steering and rotation animation
     private GameObject rearRightWheel;
     private GameObject rearLeftWheel;
     private GameObject frontLeftWheel;
     private GameObject frontRightWheel;
+    
+    // Forklift's rigidbody for physics-based movement
     Rigidbody rb;
 
+    // Ray used for camera obstruction detection
     private Ray ray;
     
-    // Track target steering angles for rear wheels (Y-axis only)
+    // Target steering angles for rear wheels (Y-axis rotation only)
     private float rearLeftSteerAngle = 0f;
     private float rearRightSteerAngle = 0f;
     
-    // Track wheel rolling rotation (X-axis only)
+    // Accumulated wheel rolling rotation angles (X-axis rotation only)
     private float rearLeftSpinAngle = 0f;
     private float rearRightSpinAngle = 0f;
     private float frontLeftSpinAngle = 0f;
     private float frontRightSpinAngle = 0f;
 
-    
+    /// <summary>
+    /// Initializes forklift components by finding and caching references to child objects.
+    /// Sets up initial camera distance values.
+    /// </summary>
     void Start()
     {
-        rb = GetComponent<Rigidbody>(); //get rigidbody, responsible for enabling collision with other colliders
+        // Cache rigidbody for physics-based movement
+        rb = GetComponent<Rigidbody>();
+        
+        // Find and cache all child GameObjects
         RotatePoint = transform.Find("RotatePoint").gameObject;
         forkliftCamera = transform.Find("RotatePoint").Find("ForkliftCamera").gameObject;
         forks = transform.Find("Lift").gameObject;
@@ -57,26 +95,42 @@ public class ForkliftController : MonoBehaviour
         frontLeftWheel = transform.Find("Wheel_L_Front").gameObject;
         frontRightWheel = transform.Find("Wheel_R_Front").gameObject;
 
-        // initialize camera distances
+        // Initialize camera distances to default value
         targetCameraDistance = cameraDistance;
         actualCameraDistance = cameraDistance;
     }
 
+    /// <summary>
+    /// Input callback for steering control. Stores horizontal steering input.
+    /// </summary>
+    /// <param name="rotationInput">Steering input vector (x = horizontal steering)</param>
     public void Steering(Vector2 rotationInput)
     {
         rotation = rotationInput;
     }
 
+    /// <summary>
+    /// Input callback for movement control. Stores forward/backward movement input.
+    /// </summary>
+    /// <param name="movementInput">Movement input vector (y = forward/backward)</param>
     public void Move(Vector2 movementInput)
     {
         movement = movementInput.y;
     }
 
+    /// <summary>
+    /// Input callback for camera zoom control.
+    /// </summary>
+    /// <param name="zoomInput">Zoom input vector (y = zoom in/out)</param>
     public void Zoom(Vector2 zoomInput)
     {
         zoomAmount = zoomInput.y;
     }
 
+    /// <summary>
+    /// Input callback for interact button. Dismounts player if currently mounted.
+    /// </summary>
+    /// <param name="value">Interaction button state</param>
     public void Interact(bool value)
     {
         var mountForklift = GetComponent<MountForklift>();
@@ -86,22 +140,28 @@ public class ForkliftController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Input callback for fork lift/tilt control. Calculates lifting and tilting movements
+    /// with clamping to prevent exceeding physical limits.
+    /// </summary>
+    /// <param name="value">Fork control input (y = lift up/down, x = tilt forward/back)</param>
     public void Forks(Vector2 value)
     {
         float liftAmount = value.y;
         float tiltAmount = value.x;
-        float liftSpeed = 2f; // adjust to taste
-        float tiltSpeed = 25f; // degrees per second
-        float minLiftY = 2.2f;
-        float maxLiftY = 8f;
-        float minTiltX = -15f;
-        float maxTiltX = 15f;
+        float liftSpeed = 2f; // Vertical lifting speed (meters per second)
+        float tiltSpeed = 25f; // Tilt rotation speed (degrees per second)
+        float minLiftY = 2.2f; // Minimum fork height
+        float maxLiftY = 8f;   // Maximum fork height
+        float minTiltX = -15f; // Maximum backward tilt
+        float maxTiltX = 15f;  // Maximum forward tilt
 
         if (forks == null) return;
 
-        // Apply lifting
+        // Calculate lifting movement
         Vector3 lift = Vector3.up * liftAmount * liftSpeed * Time.fixedDeltaTime;
-        // Only clamp magnitude when moving upward to prevent getting stuck at max height
+        
+        // Clamp lifting when approaching limits to prevent overshooting
         if (liftAmount > 0)
         {
             float remainingUpDistance = maxLiftY - forks.transform.localPosition.y;
@@ -120,19 +180,27 @@ public class ForkliftController : MonoBehaviour
         }
         lifting = lift;
 
-        // Apply tilting
+        // Calculate tilting movement
         Vector3 tilt = Vector3.right * tiltAmount * tiltSpeed * Time.fixedDeltaTime;
         tilt = Vector3.ClampMagnitude(tilt, maxTiltX - forks.transform.localEulerAngles.z);
         tilting = tilt;
     }
 
+    /// <summary>
+    /// Input callback for camera rotation control via mouse or joystick.
+    /// </summary>
+    /// <param name="camDelta">Camera rotation delta (x = yaw, y = pitch)</param>
     public void Camera(Vector2 camDelta)
     {
         this.camDelta = camDelta;
     }
-    // Update is called once per frame
+    /// <summary>
+    /// Fixed update called at fixed physics intervals.
+    /// Handles all physics-based movement, steering, fork operations, camera updates, and wheel animations.
+    /// </summary>
     void FixedUpdate()
     {
+        // Convert movement input to local direction vector
         Vector3 moveDir = new Vector3(0, 0, movement);
         Vector3 flatVel = rb.linearVelocity; flatVel.y = 0f;
         float flatSpeed = flatVel.magnitude;
@@ -143,17 +211,20 @@ public class ForkliftController : MonoBehaviour
             : 1f;
         Vector3 boostedMove = moveDir * boost;
 
-        // steer rear wheels based on horizontal rotation input
-        float maxWheelSteer = 30f; // degrees
-        float wheelLerpSpeed = 8f; // higher = snappier
-        // desired steer angle based on input
+        // === REAR WHEEL STEERING ===
+        // Rear wheels steer (like a forklift) for tight turning radius
+        float maxWheelSteer = 30f; // Maximum steering angle in degrees
+        float wheelLerpSpeed = 8f; // Steering interpolation speed (higher = more responsive)
+        
+        // Calculate desired steering angle from input, inverted for correct direction
         float desiredSteer = -Mathf.Clamp(rotation.x * maxWheelSteer, -maxWheelSteer, maxWheelSteer);
 
-        // Smoothly interpolate target steering angles (Y rotation only)
+        // Smoothly interpolate steering angles toward target (Y-axis rotation)
         rearLeftSteerAngle = Mathf.LerpAngle(rearLeftSteerAngle, desiredSteer, Time.fixedDeltaTime * wheelLerpSpeed);
         rearRightSteerAngle = Mathf.LerpAngle(rearRightSteerAngle, desiredSteer, Time.fixedDeltaTime * wheelLerpSpeed);
 
-        // Apply combined steering (Y) and rolling (X) to rear wheels
+        // Apply both steering (Y) and rolling spin (X) to rear wheels
+        // Kept separate to prevent gimbal lock and rotation conflicts
         if (rearLeftWheel != null)
         {
             rearLeftWheel.transform.localRotation = Quaternion.Euler(rearLeftSpinAngle, rearLeftSteerAngle, 0f);
@@ -164,30 +235,41 @@ public class ForkliftController : MonoBehaviour
             rearRightWheel.transform.localRotation = Quaternion.Euler(rearRightSpinAngle, rearRightSteerAngle, 0f);
         }
 
+
         rb.AddForce(transform.TransformDirection(boostedMove), ForceMode.VelocityChange);
         audioController.ChangeEngineIdlePitch(0.5f + Mathf.Abs(movement) * 0.5f);
 
-        // use local forward velocity to determine direction and wheel rotation
+        // Calculate local forward velocity for direction-based steering
         Vector3 localVel = transform.InverseTransformDirection(rb.linearVelocity);
         float forwardVel = localVel.z;
 
-        float moveThreshold = 0.1f;
-        float steeringSpeed = 0.5f;
+        // === FORKLIFT BODY ROTATION (STEERING) ===
+        // Only rotate forklift body when moving (prevents spinning in place)
+        float moveThreshold = 0.1f; // Minimum velocity to allow steering
+        float steeringSpeed = 0.5f; // Steering rotation speed multiplier
+        
         if (rb != null)
         {
             if (rb.linearVelocity.sqrMagnitude > moveThreshold * moveThreshold)
             {
+                // Reverse steering direction when moving backward
                 float dir = forwardVel < 0f ? -1f : 1f;
                 transform.Rotate(0f, rotation.x * Time.fixedDeltaTime * 100f * dir * steeringSpeed, 0f);
             }
         }
 
-        // Apply lifting
+        // === FORK OPERATIONS ===
+        // Apply calculated lifting movement from input
         if (lifting != Vector3.zero)
         {
+            // Apply lifting movement and clamp to physical limits
             Vector3 newPosition = forks.transform.localPosition + lifting;
             newPosition.y = Mathf.Clamp(newPosition.y, 2.2f, 8f);
             forks.transform.localPosition = newPosition;
+            Debug.Log(lifting);
+            
+            // Play hydraulic sound (forward or reverse pitch based on direction)
+
             if(lifting.y > 0)
             {
                 audioController.PlayForkLiftSound();
@@ -199,33 +281,41 @@ public class ForkliftController : MonoBehaviour
         }
         else
         {
+            // Stop hydraulic sound when not lifting
             audioController.StopForkLiftSound();
         }
-        // Apply tilting
+        
+        // Apply calculated tilting movement from input
         if (tilting != Vector3.zero)
         {
             Vector3 currentEuler = forks.transform.localEulerAngles;
             float currentTiltX = currentEuler.x;
+            
+            // Normalize angle to -180 to 180 range for proper clamping
             if (currentTiltX > 180f) currentTiltX -= 360f;
+            
+            // Apply tilt and clamp to safe operating range
             float newTiltX = Mathf.Clamp(currentTiltX + tilting.x, -15f, 15f);
             forks.transform.localEulerAngles = new Vector3(newTiltX, currentEuler.y, currentEuler.z);
         }
 
+        // === CAMERA ZOOM AND OBSTRUCTION HANDLING ===
         if (forkliftCamera != null)
         {
             Vector3 camPos = forkliftCamera.transform.localPosition;
 
-            // Tuneable values
-            float minDistance = 2f; // closest allowed by user
-            float maxDistance = cameraDistance; // farthest allowed by user
-            float zoomSensitivity = 0.75f; // how strongly input affects target
-            float smoothSpeed = 5f; // smoothing for actual camera movement
+            // Camera distance parameters
+            float minDistance = 2f;  // Minimum zoom distance
+            float maxDistance = cameraDistance; // Maximum zoom distance
+            float zoomSensitivity = 0.75f; // Zoom input multiplier
+            float smoothSpeed = 5f; // Camera position smoothing speed
 
-            // Apply zoom input directly to targetCameraDistance each frame
+            // Apply zoom input to target distance
             targetCameraDistance -= zoomAmount * zoomSensitivity;
             targetCameraDistance = Mathf.Clamp(targetCameraDistance, minDistance, maxDistance);
 
-            // Raycast from the RotatePoint toward the camera to detect obstructions
+            // Raycast backward from camera pivot to detect obstructions
+            // Ignores forklift and player layers to prevent self-collision
             ray = new Ray(RotatePoint.transform.position, -RotatePoint.transform.forward);
             float obstructionDistance = float.PositiveInfinity;
             if (Physics.Raycast(ray, out RaycastHit hitInfo, maxDistance, ~LayerMask.GetMask("Forklift", "Player")))
@@ -233,37 +323,38 @@ public class ForkliftController : MonoBehaviour
                 obstructionDistance = hitInfo.distance;
             }
 
-            // allowedDistance is the temporary clamped distance (if something is in the way)
+            // Clamp camera distance if obstructed
             float allowedDistance = float.IsPositiveInfinity(obstructionDistance) ? targetCameraDistance : Mathf.Min(targetCameraDistance, obstructionDistance);
 
-            // smooth actual camera distance towards the allowed distance; when obstruction clears
-            // allowedDistance will equal targetCameraDistance and the camera will move back out
+            // Smoothly interpolate actual camera distance (automatically moves back out when obstruction clears)
             actualCameraDistance = Mathf.Lerp(actualCameraDistance, allowedDistance, Time.fixedDeltaTime * smoothSpeed);
 
-            // apply camera local position (Z is negative in this setup)
+            // Apply final camera position (negative Z in local space)
             forkliftCamera.transform.localPosition = new Vector3(camPos.x, camPos.y, -actualCameraDistance);
         }
 
-        // rotate RotatePoint with mouse movement (left/right -> yaw, up/down -> pitch)
-        float sensitivity = rotateSpeed; // tweak to taste
+        // === CAMERA ROTATION ===
+        // Rotate camera pivot with mouse/stick input (yaw = left/right, pitch = up/down)
+        float sensitivity = rotateSpeed;
 
-        // compute yaw and pitch changes
+        // Calculate rotation deltas from input
         float yawDelta = camDelta.x * sensitivity;
-        float pitchDelta = -camDelta.y * sensitivity; // invert Y so moving mouse up looks up
+        float pitchDelta = -camDelta.y * sensitivity; // Inverted so mouse up looks up
 
-        // get current local angles and convert pitch to -180..180 range for clamping
+        // Get current rotation and normalize pitch to -180 to 180 range
         Vector3 current = RotatePoint.transform.localEulerAngles;
         float currentPitch = current.x;
         if (currentPitch > 180f) currentPitch -= 360f;
 
-        // apply and clamp pitch
+        // Apply rotation with pitch clamping to prevent over-rotation
         float newPitch = Mathf.Clamp(currentPitch + pitchDelta, -45f, 45f);
         float newYaw = current.y + yawDelta;
 
-        // set new local rotation
+        // Set final camera pivot rotation
         RotatePoint.transform.localEulerAngles = new Vector3(newPitch, newYaw, current.z);
 
-        // Pass forward velocity to wheel rotation
+        // === WHEEL ROTATION ANIMATION ===
+        // Update wheel spin based on actual forward velocity
         RotateWheels(forwardVel);
 
 
@@ -272,9 +363,15 @@ public class ForkliftController : MonoBehaviour
     }
 
 
+    /// <summary>
+    /// Calculates and applies wheel rotation animation based on forward velocity.
+    /// Converts linear velocity to angular rotation using wheel radius.
+    /// Maintains separate spin and steering angles to prevent gimbal lock.
+    /// </summary>
+    /// <param name="velocity">Forward velocity in meters per second</param>
     void RotateWheels(float velocity)
     {
-        // pick a sample wheel to estimate radius (fallback to 0.5m)
+        // Estimate wheel radius from mesh bounds (default to 0.5m if not found)
         GameObject sample = rearLeftWheel ?? rearRightWheel ?? frontLeftWheel ?? frontRightWheel;
         float radius = 0.5f;
         if (sample != null)
@@ -282,29 +379,30 @@ public class ForkliftController : MonoBehaviour
             var rend = sample.GetComponent<Renderer>();
             if (rend != null)
             {
-                // use the largest extent as an approximation of radius
+                // Use largest extent as radius approximation
                 radius = Mathf.Max(rend.bounds.extents.x, rend.bounds.extents.y, rend.bounds.extents.z);
                 if (radius <= 0f) radius = 0.5f;
             }
         }
 
-        // convert linear velocity (m/s) to RPM:
-        // rpm = (velocity / (2 * PI * radius)) * 60
+        // Convert linear velocity (m/s) to RPM
+        // Formula: rpm = (velocity / circumference) * 60
         float rpm = velocity / (2f * Mathf.PI * radius) * 60f;
 
-        // convert RPM to degrees per second (360 degrees per revolution, 60 seconds per minute)
-        float degreesPerSecond = rpm * 360f / 60f; // = rpm * 6
+        // Convert RPM to degrees per second
+        float degreesPerSecond = rpm * 360f / 60f;
 
-        // apply rotation this frame around local X axis
+        // Calculate rotation delta for this frame
         float deltaDegrees = degreesPerSecond * Time.fixedDeltaTime;
 
-        // Update spin angles for all wheels
+        // Accumulate spin angles for all wheels (independent of steering)
         rearLeftSpinAngle += deltaDegrees;
         rearRightSpinAngle += deltaDegrees;
         frontLeftSpinAngle += deltaDegrees;
         frontRightSpinAngle += deltaDegrees;
         
-        // Apply rolling rotation to rear wheels (combined with steering above)
+        // Apply rolling rotation to rear wheels (X-axis) combined with steering (Y-axis)
+        // Using separate tracked angles prevents steering from interfering with spin
         if (rearLeftWheel != null)
         {
             rearLeftWheel.transform.localRotation = Quaternion.Euler(rearLeftSpinAngle, rearLeftSteerAngle, 0f);
@@ -314,7 +412,7 @@ public class ForkliftController : MonoBehaviour
             rearRightWheel.transform.localRotation = Quaternion.Euler(rearRightSpinAngle, rearRightSteerAngle, 0f);
         }
         
-        // Apply rolling rotation to front wheels (no steering)
+        // Apply rolling rotation to front wheels (no steering on front wheels)
         if (frontLeftWheel != null)
         {
             frontLeftWheel.transform.localRotation = Quaternion.Euler(frontLeftSpinAngle, 0f, 0f);

@@ -43,11 +43,10 @@ public class PTController : MonoBehaviour
             BoxData box = new BoxData();
             box.typeOfBox = b.typeOfBox;
             palletData.palletBoxes.Add(box);
-            //for later: update prefab visually
-            currentPallet.GetComponent<Pallet>().FillEmptyZonesWithBoxes();
+            currentPallet.GetComponent<Pallet>().FillEmptyZonesWithBoxes(); //fill pallet visually
             SFXController.Instance.PlayClip(SFXController.Instance.boxAbsorbed, true);
         }
-        else
+        else //pallet full, launch box
         {
             DetermineBoxType(b.typeOfBox);
 
@@ -80,10 +79,7 @@ public class PTController : MonoBehaviour
 
                 rb.AddTorque(randomTorque, ForceMode.Impulse);
             }
-
             SFXController.Instance.PlayClip(SFXController.Instance.boxLaunch);
-
-            // for later: play error noise? show error feedback?
             currentPallet.GetComponent<Pallet>().FillEmptyZonesWithBoxes();
         }
         StartCoroutine(DelayBoxProcessing());
@@ -109,7 +105,7 @@ public class PTController : MonoBehaviour
         }
     }
 
-    public void UnloadBoxFromPallet()
+    public void UnloadBoxFromPallet() //take box off pallet
     {
         if (!currentPallet || !palletData || flag) return;
 

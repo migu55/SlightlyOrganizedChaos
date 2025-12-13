@@ -15,11 +15,6 @@ public class PTPalletTrigger : MonoBehaviour
         ptc = PTCore.GetComponent<PTController>();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-    }
-
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.tag == "Pallet" && other.transform.parent.gameObject.GetComponent<Pallet>() != null) //check since pallet prefab does not have any colliders

@@ -1,7 +1,7 @@
 using TMPro;
 using UnityEngine;
 
-public class RoundTextUpdates : MonoBehaviour
+public class RoundTextUpdates : MonoBehaviour //For post round stats
 {
     [SerializeField] TextMeshProUGUI dayText;
     [SerializeField] TextMeshProUGUI totalText;

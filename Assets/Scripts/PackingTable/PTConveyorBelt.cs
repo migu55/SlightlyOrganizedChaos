@@ -17,15 +17,12 @@ public class PTConveyorBelt : MonoBehaviour
         ptc = PTCore.GetComponent<PTController>();
     }
 
-    private void OnCollisionStay(Collision collision)
+    private void OnCollisionStay(Collision collision) //move stuff along belt by giving velocity while colliding
     {
         Rigidbody rb = collision.gameObject.GetComponent<Rigidbody>();
         
-        if (rb == null)
-        {
-            return;
-        }
-
+        if (rb == null) return;
+        
         Vector3 beltDirection = new Vector3(0, 0, ptc.isLoading ? 1 : -1);
 
         Vector3 beltVelocity = transform.TransformDirection(beltDirection.normalized) * speed;
@@ -36,14 +33,6 @@ public class PTConveyorBelt : MonoBehaviour
 
         Vector3 blend = Vector3.Lerp(alongBelt, beltVelocity, 0.75f);
         rb.linearVelocity = blend + other;
-
-
-        // rb.linearVelocity = blend;
-       // Debug.Log(rb.linearVelocity);
-
-        //Vector3 beltForce = transform.TransformDirection(direction.normalized) * speed;
-        //rb.AddForce(beltForce, ForceMode.Acceleration);
-
     }
 
 }

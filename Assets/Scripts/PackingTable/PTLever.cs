@@ -29,7 +29,7 @@ public class PTLever : MonoBehaviour, Interactable
         SFXController.Instance.PlayClip(SFXController.Instance.doorClicked);
         ptc.isLoading = !ptc.isLoading;
 
-        if (ptc.isLoading)
+        if (ptc.isLoading) //swap color of button
         {
             objR.material = loadingMat;
         } else
