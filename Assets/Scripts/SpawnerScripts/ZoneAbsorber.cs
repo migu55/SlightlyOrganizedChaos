@@ -62,13 +62,11 @@ public class ZoneAbsorber : MonoBehaviour
         {
             // Diagnostic log: show which specific collider caused this trigger so we can see duplicate calls
             string attachedRbName = other.attachedRigidbody != null ? other.attachedRigidbody.gameObject.name : "(none)";
-            Debug.Log($"ZoneAbsorber: Trigger by collider id={other.GetInstanceID()} name={other.name} root={other.transform.root.name} attachedRb={attachedRbName} -> palletId={pallet.gameObject.GetInstanceID()} palletName={pallet.gameObject.name} (resolvedFrom={resolvedPalletObj.name})");
 
             int palletId = pallet.gameObject.GetInstanceID();
             float now = Time.time;
             if (_lastAbsorbTime.TryGetValue(palletId, out float last) && now - last < DEDUPE_WINDOW)
             {
-                Debug.Log($"ZoneAbsorber: Ignoring duplicate trigger for palletId={palletId} (dt={now-last:F3}s)");
                 return;
             }
 

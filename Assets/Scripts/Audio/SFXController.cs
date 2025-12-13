@@ -22,8 +22,17 @@ public class SFXController : MonoBehaviour
     public AudioClip boxLaunch;
     public AudioClip uiInput;
     public AudioClip uiSelect;
+    public AudioClip boxSpawned;
+    public AudioClip boxAbsorbed;
+    public AudioClip boxCollision;
+    public AudioClip palletSpawned;
+    public AudioClip palletDestroyed;
+    public AudioClip doorClicked;
+    public AudioClip doorMoved;
+    public AudioClip missionSpawned;
 
-    private AudioSource audioSource;
+    public AudioSource audioSource;
+    public AudioSource audioSourcePitched;
 
     private void Awake()
     {
@@ -45,24 +54,20 @@ public class SFXController : MonoBehaviour
         PlayClip(clip, false);
     }
 
-    // Play SFX in 2D
+    // Play Random Pitch for repeated actions
     public void PlayClip(AudioClip clip, bool randomPitch)
     {
         if (clip == null) return;
 
         if (randomPitch)
-            audioSource.pitch = Random.Range(pitchMin, pitchMax);
-        else
-            audioSource.pitch = 1f;
-
-        audioSource.PlayOneShot(clip);
+        {
+            audioSourcePitched.pitch = Random.Range(pitchMin, pitchMax);
+            audioSourcePitched.PlayOneShot(clip);
+        } else
+        {
+            audioSource.PlayOneShot(clip);
+        }
+            
     }
 
-    // Play SFX in 3D at a world position
-    public void PlayAt(AudioClip clip, Vector3 pos, float volume = 1f)
-    {
-        if (clip == null) return;
-
-        AudioSource.PlayClipAtPoint(clip, pos, volume);
-    }
 }

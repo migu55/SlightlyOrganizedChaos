@@ -13,6 +13,8 @@ public class ForkliftController : MonoBehaviour
 {
     // Camera rotation sensitivity
     public float rotateSpeed = 1;
+    public float lowSpeedBoost = 4f; // extra shove when starting under load
+    public float boostEndSpeed = 3f; // fade boost out by this speed (m/s)
 
     // Reference to audio controller for engine and hydraulic sounds
     public ForkliftAudioController audioController;
@@ -200,6 +202,14 @@ public class ForkliftController : MonoBehaviour
     {
         // Convert movement input to local direction vector
         Vector3 moveDir = new Vector3(0, 0, movement);
+        Vector3 flatVel = rb.linearVelocity; flatVel.y = 0f;
+        float flatSpeed = flatVel.magnitude;
+
+        // scale input for extra torque at low speed; returns to normal past boostEndSpeed
+        float boost = flatSpeed < boostEndSpeed
+            ? Mathf.Lerp(lowSpeedBoost, 1f, flatSpeed / Mathf.Max(0.01f, boostEndSpeed))
+            : 1f;
+        Vector3 boostedMove = moveDir * boost;
 
         // === REAR WHEEL STEERING ===
         // Rear wheels steer (like a forklift) for tight turning radius
@@ -225,11 +235,15 @@ public class ForkliftController : MonoBehaviour
             rearRightWheel.transform.localRotation = Quaternion.Euler(rearRightSpinAngle, rearRightSteerAngle, 0f);
         }
 
+<<<<<<< HEAD
         // === PHYSICS-BASED MOVEMENT ===
         // Apply instant velocity change for responsive forklift movement
         rb.AddForce(transform.TransformDirection(moveDir), ForceMode.VelocityChange);
         
         // Modulate engine pitch based on throttle input (simulates RPM)
+=======
+        rb.AddForce(transform.TransformDirection(boostedMove), ForceMode.VelocityChange);
+>>>>>>> 63de0e21a8ff66ceb7fdc9ebe55d94d4da0ee360
         audioController.ChangeEngineIdlePitch(0.5f + Mathf.Abs(movement) * 0.5f);
 
         // Calculate local forward velocity for direction-based steering
@@ -259,9 +273,12 @@ public class ForkliftController : MonoBehaviour
             Vector3 newPosition = forks.transform.localPosition + lifting;
             newPosition.y = Mathf.Clamp(newPosition.y, 2.2f, 8f);
             forks.transform.localPosition = newPosition;
+<<<<<<< HEAD
             Debug.Log(lifting);
             
             // Play hydraulic sound (forward or reverse pitch based on direction)
+=======
+>>>>>>> 63de0e21a8ff66ceb7fdc9ebe55d94d4da0ee360
             if(lifting.y > 0)
             {
                 audioController.PlayForkLiftSound();

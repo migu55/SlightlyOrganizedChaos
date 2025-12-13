@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 /// <summary>
 /// Detects when a player enters or exits a trigger zone (typically for interactions like forklift mounting).
@@ -9,14 +10,18 @@ public class TriggerDetector : MonoBehaviour
 {
     // Indicates whether a player is currently in the trigger zone
     public bool triggered = false;
+<<<<<<< HEAD
     
     // Reference to the player GameObject currently in the trigger (null if none)
     public GameObject player;
     
+=======
+    public List<GameObject> player;
+>>>>>>> 63de0e21a8ff66ceb7fdc9ebe55d94d4da0ee360
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-
+        player = new List<GameObject>();
     }
 
     /// <summary>
@@ -26,12 +31,17 @@ public class TriggerDetector : MonoBehaviour
     /// <param name="other">The collider that entered the trigger</param>
     private void OnTriggerEnter(Collider other)
     {
+<<<<<<< HEAD
         // Only respond if not already triggered and the entering object is a player
         if (!triggered && other.gameObject.tag == "Player")
+=======
+        if (other.gameObject.tag == "Player")
+>>>>>>> 63de0e21a8ff66ceb7fdc9ebe55d94d4da0ee360
         {
-            Debug.Log("Player entered trigger");
-            triggered = true;
-            player = other.gameObject;
+                triggered = true;
+                if(!player.Contains(other.gameObject)) {
+                    player.Add(other.gameObject);
+                }
         }
     }
 
@@ -45,8 +55,8 @@ public class TriggerDetector : MonoBehaviour
         // Only respond if currently triggered and the exiting object is a player
         if (triggered && other.gameObject.tag == "Player")
         {
-            triggered = false;
-            player = null;
+            player.Remove(other.gameObject);
+            if(player.Count == 0) triggered = false;
         }
     }
 

@@ -22,9 +22,6 @@ public class MissionBehavior : MonoBehaviour
 
     public TruckSpawnerManager truckSpawnerManager;
 
-    //Debug
-    public TMP_InputField debugMissionIDInput;
-
     public GameObject spawnMission(MissionData m)
     {
         GameObject baseUI = Instantiate(MissionUIPrefab, missionUIParentTransform, false);
@@ -72,7 +69,7 @@ public class MissionBehavior : MonoBehaviour
         createMission(null);
     }
 
-    public void createMission(MissionData mDetails)
+    public void createMission(MissionData mDetails) //overload for tutorial mission
     {
         if (mDetails != null && activeMissions.FirstOrDefault(m => m.id == mDetails.id) != null) return;
 
@@ -88,49 +85,30 @@ public class MissionBehavior : MonoBehaviour
             mData = mDetails;
         }
 
-        if (mData.time > GameStats.Instance.gameTime)
+        if (mData.time > GameStats.Instance.gameTime) //prevents time going over the total mission time
         {
             mData.time = GameStats.Instance.gameTime;
         }        
 
-        spawnMission(mData);
+        spawnMission(mData); //missionUI
         activeMissions.Add(mData);
-        Debug.Log("Created Mission ID: " + mData.id);
         GameStats.Instance.roundNumMissions++;
-        truckSpawnerManager.spawnTruck(mData.id, false);
-        //Destroy(mission);
+        SFXController.Instance.PlayClip(SFXController.Instance.missionSpawned);
+        truckSpawnerManager.spawnTruck(mData.id, false); //send mission information to truck
     }
-
-    //public void DebugDeleteMission()
-    //{
-    //    int m;
-    //    if (int.TryParse(debugMissionIDInput.text, out m))
-    //    {
-    //        removeMission(m);
-    //    } else
-    //    {
-    //        Debug.Log("Invalid Entry");
-    //    }
-    //    debugMissionIDInput.text = string.Empty;
-    //}
 
     public void removeMission(int MissionID)
     {
-        Debug.Log("Inside removeMission");
         MissionData m = activeMissions.FirstOrDefault(o => o.id == MissionID);
         if (m != null)
         {
             activeMissions.Remove(m);
         }
  
-        GameObject found = FindObjectsOfType<Mission>().FirstOrDefault(o => o.id == MissionID)?.gameObject;
+        GameObject found = FindObjectsOfType<Mission>().FirstOrDefault(o => o.id == MissionID)?.gameObject; //destroy UI element
         if (found != null)
         {
             Destroy(found);
-            Debug.Log("Destroyed Mission ID: " + MissionID);
-        } else
-        {
-            Debug.Log("Could not find Mission with that ID.");
         }
 
     }
@@ -141,11 +119,7 @@ public class MissionBehavior : MonoBehaviour
         if (found != null)
         {
             MissionTimer core = found.GetComponent<MissionTimer>();
-            core.UpdateQuotas(qty);
-        }
-        else
-        {
-            Debug.Log("Could not find Mission with that ID.");
+            core.UpdateQuotas(qty); //send info to missionUI
         }
     }
 
@@ -155,7 +129,7 @@ public class MissionBehavior : MonoBehaviour
         receiveMission(missionID, submitted, true);
     }
 
-    public int[] BoxDataToIntArray(List<BoxData> data)
+    public int[] BoxDataToIntArray(List<BoxData> data) //global converter helper
     {
         if (data == null) return null;
 
@@ -174,7 +148,6 @@ public class MissionBehavior : MonoBehaviour
                     c++;
                     break;
                 default:
-                    Debug.Log("Wrong Box Detected.");
                     break;
             }
         }
@@ -185,7 +158,6 @@ public class MissionBehavior : MonoBehaviour
     public void receiveMission(int missionID, List<BoxData> submitted, bool playAnimation)
     {
         MissionData mission = activeMissions.FirstOrDefault(i => i.id == missionID);
-        Debug.Log("Mission" + mission);
         if (mission != null)
         {
             int[] submittedArray = BoxDataToIntArray(submitted);
@@ -286,10 +258,6 @@ public class MissionBehavior : MonoBehaviour
             removeMission(missionID);
 
         }
-        else
-        {
-            Debug.Log("Could not find Mission with that ID.");
-        }
     }
 
     public MissionData getMissionWithMissionID(int missionID)
@@ -299,7 +267,6 @@ public class MissionBehavior : MonoBehaviour
 
     void BeginRound()
     {
-        Debug.Log("Round Start");
         roundActive = true;
         rgtr.RoundStatusRoundStart();
         SFXController.Instance.PlayClip(SFXController.Instance.roundStartJingle);
@@ -307,8 +274,6 @@ public class MissionBehavior : MonoBehaviour
         currentMissionID = 1; //set current Mission ID for this round
         requiredAmtOfMissions = (GameStats.Instance.gameRound / 2) + 3; //set required number of Missions for this round
         randomAmtOfMissions = GameStats.Instance.gameRound / 3; //every 3 rounds, add one random Mission
-        Debug.Log("Req " + requiredAmtOfMissions);
-        Debug.Log("Rand " + randomAmtOfMissions);
 
         for (int i = 0; i < requiredAmtOfMissions - 1; i++) //divide required number of Missions equally, buffer is prep phase and 90 before finish
         {
@@ -333,12 +298,9 @@ public class MissionBehavior : MonoBehaviour
 
     IEnumerator EndRound()
     {
-        Debug.Log("Round End");
         roundActive = false;
         SFXController.Instance.PlayClip(SFXController.Instance.roundEndWhistle);
         yield return new WaitForSeconds(1);
-        //activeMissions.Clear();
-        //missionIntervals.Clear();
     }
 
     void Awake()
@@ -354,12 +316,10 @@ public class MissionBehavior : MonoBehaviour
         {
             if (nextRequiredMissionInterval == Mathf.FloorToInt(GameStats.Instance.gameTime)) //if required Mission not empty and upcomming required Mission matched
             {
-                Debug.Log("Required Spawning at " + (int)GameStats.Instance.gameTime);
                 createMission();
                 if (missionIntervals.Count > 0)
                 {
                     nextRequiredMissionInterval = missionIntervals[0]; //move to next required interval
-                    Debug.Log("Next Interval: " + nextRequiredMissionInterval);
                     missionIntervals.RemoveAt(0);
                 } else
                 {

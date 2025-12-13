@@ -26,7 +26,6 @@ public class PlayerSpawner : MonoBehaviour
         sb.AppendLine("Detected input devices:");
         foreach (var d in UnityEngine.InputSystem.InputSystem.devices)
             sb.AppendLine($"  [{d.deviceId}] {d.displayName} ({d.layout})");
-        Debug.Log(sb.ToString());
 
         // Find the first suitable controller device (gamepad or joystick)
         UnityEngine.InputSystem.InputDevice chosenDevice = null;
@@ -43,6 +42,7 @@ public class PlayerSpawner : MonoBehaviour
         if (chosenDevice != null)
         {
             var pim = GetComponent<PlayerInputManager>();
+<<<<<<< HEAD
             
             // Join player: -1 = auto-assign split screen, -1 = auto control scheme, "Player" = action map
             pim.JoinPlayer(-1, -1 , "Player", chosenDevice);
@@ -51,6 +51,9 @@ public class PlayerSpawner : MonoBehaviour
         else
         {
             Debug.Log("No suitable input device found to join player.");
+=======
+            pim.JoinPlayer(-1, -1 , null, chosenDevice);
+>>>>>>> 63de0e21a8ff66ceb7fdc9ebe55d94d4da0ee360
         }
     }
 

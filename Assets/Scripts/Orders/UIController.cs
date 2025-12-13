@@ -101,11 +101,17 @@ public class UIController : MonoBehaviour
             {
                 // e.g. GameObject named "OrderButton" or "PlaceOrder"
                 current.menu.PlaceOrder();
+                current = sys.firstSelectedGameObject.GetComponent<UIItem>();
+            }
+            else if (goName.Contains("clear"))
+            {
+                current.menu.ClearOrder();
             }
             else
             {
                 // Fallback: call PlaceOrder for action items if we can't determine exactly
                 current.menu.PlaceOrder();
+                current = sys.firstSelectedGameObject.GetComponent<UIItem>();
                 Debug.LogWarning($"UIController.Submit: ambiguous action for '{current.gameObject.name}', falling back to PlaceOrder().");
             }
         }

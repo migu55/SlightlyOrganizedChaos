@@ -41,12 +41,90 @@ public class OpenBayDoor3 : MonoBehaviour, Interactable
             Debug.LogWarning("Animator not set on OpenBayDoor3.");
             return;
         }
+        Collider zoneCollider = SpawnerZone.GetComponent<Collider>();
+
+        // Use an overlap check to reliably find colliders inside the zone (more robust than testing the truck's pivot point)
+        Vector3 pad = Vector3.one * 0.5f; // increased pad to be more tolerant of pivot offsets
+        Vector3 extents = zoneCollider.bounds.extents + pad;
+        Collider[] hits = Physics.OverlapBox(zoneCollider.bounds.center, extents, zoneCollider.transform.rotation, ~0, QueryTriggerInteraction.Collide);
+        Debug.Log($"OpenBayDoor: OverlapBox found {hits.Length} colliders in SpawnerZone '{SpawnerZone.name}' (center={zoneCollider.bounds.center}, extents={zoneCollider.bounds.extents}).");
+        var trucksFound = new System.Collections.Generic.HashSet<GameObject>();
+        foreach (var hit in hits)
+        {
+            if (hit == null) continue;
+            Debug.Log($"OpenBayDoor: Overlap hit: {hit.gameObject.name} (layer={LayerMask.LayerToName(hit.gameObject.layer)})");
+            Transform t = hit.transform;
+            // walk up the hierarchy to find a parent tagged "Truck"
+            while (t != null && !t.CompareTag("Truck")) t = t.parent;
+            if (t != null && t.CompareTag("Truck"))
+                trucksFound.Add(t.gameObject);
+        }
+        
+        bool empty = false;
+
+        foreach (GameObject truck in trucksFound)
+        {
+            PalletZoneTracker pzt = truck.GetComponent<PalletZoneTracker>();
+
+            if (pzt != null)
+            {
+                int total = pzt.GetTotalPalletsInZones();
+
+                if (total == 0)
+                {
+                    empty = true;
+                }
+            }
+            
+        }
+
 
         if (!isOpen)
         {
+            SFXController.Instance.PlayClip(SFXController.Instance.doorMoved);
             doorAnimator.Play(openState);
+            // Only set the close-door display if there is no truck currently occupying the spawner zone
+            if (empty)
+            {
+                SpawnerZone?.GetComponent<TruckToDisplay>()?.missionDisplay?.GetComponent<MissionDisplayController>()?.SetCloseDoorDisplay();
+            }
             isOpen = true;
         }
+    }
+    
+    private bool IsTruckInSpawnerZone()
+    {
+	    if (SpawnerZone == null) return false;
+	    Collider zoneCollider = SpawnerZone.GetComponent<Collider>();
+	    if (zoneCollider == null) return false;
+
+	    Vector3 pad = Vector3.one * 0.1f;
+	    Vector3 extents = zoneCollider.bounds.extents + pad;
+	    Collider[] hits = Physics.OverlapBox(zoneCollider.bounds.center, extents, zoneCollider.transform.rotation, ~0, QueryTriggerInteraction.Collide);
+	    foreach (var hit in hits)
+	    {
+		    if (hit == null) continue;
+		    Transform t = hit.transform;
+		    while (t != null && !t.CompareTag("Truck")) t = t.parent;
+		    if (t != null && t.CompareTag("Truck")) return true;
+	    }
+
+	    // Fallback: check TruckReceiver components for bounds intersection
+	    var receivers = GameObject.FindObjectsOfType<TruckReceiver>();
+	    foreach (var rec in receivers)
+	    {
+		    if (rec == null || rec.gameObject == null || !rec.gameObject.activeInHierarchy) continue;
+		    Collider[] childColliders = rec.GetComponentsInChildren<Collider>(true);
+		    foreach (var c in childColliders)
+		    {
+			    if (c == null) continue;
+			    if (c.bounds.Intersects(zoneCollider.bounds)) return true;
+		    }
+		    Renderer r = rec.GetComponentInChildren<Renderer>();
+		    if (r != null && r.bounds.Intersects(zoneCollider.bounds)) return true;
+	    }
+
+	    return false;
     }
 
     // Call this method to close the door
@@ -72,7 +150,9 @@ public class OpenBayDoor3 : MonoBehaviour, Interactable
 
         if (isOpen)
         {
+            SFXController.Instance.PlayClip(SFXController.Instance.doorMoved);
             doorAnimator.Play(closeState);
+            SpawnerZone?.GetComponent<TruckToDisplay>()?.missionDisplay?.GetComponent<MissionDisplayController>()?.ClearMissionTruck();
             isOpen = false;
         }
     }
@@ -259,6 +339,7 @@ public class OpenBayDoor3 : MonoBehaviour, Interactable
     public void Interact(GameObject interactor)
     {
         ToggleDoor();
+        SFXController.Instance.PlayClip(SFXController.Instance.doorClicked);
     }
 
     void Start()
@@ -350,6 +431,12 @@ public class OpenBayDoor3 : MonoBehaviour, Interactable
 				{
 					detectedId = receiver.missionId;
 					break;
+				}
+
+				PalletZoneTracker sender = truck.GetComponent<PalletZoneTracker>();
+				if (sender != null && sender.GetTotalPalletsInZones() == 0)
+				{
+					SpawnerZone?.GetComponent<TruckToDisplay>()?.missionDisplay?.GetComponent<MissionDisplayController>()?.SetCloseDoorDisplay();
 				}
 			}
 

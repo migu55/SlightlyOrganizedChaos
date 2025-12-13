@@ -65,7 +65,6 @@ public class MountForklift : MonoBehaviour, Interactable
         // Prevent mounting if another player is already mounted
         if(mounted && this.player != player)
         {
-            Debug.Log("Forklift already mounted by another player");
             return;
         }
         
@@ -73,14 +72,12 @@ public class MountForklift : MonoBehaviour, Interactable
         this.player = player;
         this.playerCamera = playerCamera;
 
-        Debug.Log("Mounting or Dismounting");
         if (!mounted)
         {
             // Check if player is carrying something - prevent mounting if so
             var pickupController = player.GetComponentInChildren<PickUpController>();
             if (pickupController == null)
             {
-                Debug.Log("Getting on forklift");
                 Mount();
             }
         }
@@ -99,7 +96,6 @@ public class MountForklift : MonoBehaviour, Interactable
     /// </summary>
     private void Mount()
     {
-        Debug.Log("Mounting");
         audioController.PlayEngineStart();
         
         // Switch camera from player to forklift view
@@ -144,9 +140,13 @@ public class MountForklift : MonoBehaviour, Interactable
         // Play engine stop audio
         audioController.StopEngineIdle();
         audioController.PlayEngineStop();
+<<<<<<< HEAD
         
         // Switch camera back to player view
         Debug.Log("Dismounting");
+=======
+        //enabling the player camera and disabling the forklift camera
+>>>>>>> 63de0e21a8ff66ceb7fdc9ebe55d94d4da0ee360
         playerCamera.enabled = true;
         forkliftCamera.enabled = false;
         

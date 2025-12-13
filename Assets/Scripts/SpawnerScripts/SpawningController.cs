@@ -11,7 +11,6 @@ public class SpawningController : MonoBehaviour
     {
 
         spawnBundles = GetComponents<SpawnBundle>();
-        Debug.Log("Spawning " + objectsToSpawn.Length + " individual objects and " + spawnBundles.Length + " spawn bundles.");
         for (int i = 0; i < objectsToSpawn.Length; i++)
         {
             GameObject objectToSpawn = objectsToSpawn[i];
@@ -20,7 +19,6 @@ public class SpawningController : MonoBehaviour
 
         for (int i = 0; i < spawnBundles.Length; i++)
         {
-            Debug.Log("Spawning bundle " + i + " at location " + spawnBundles[i].GetSpawnLocation());
             SpawnBundle spawnBundle = spawnBundles[i];
             Instantiate(spawnBundle.prefabToSpawn, spawnBundle.GetSpawnLocation());
         }

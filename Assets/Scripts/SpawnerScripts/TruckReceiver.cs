@@ -42,11 +42,6 @@ public class TruckReceiver : MonoBehaviour
         if (mb != null)
         {
             boxArray = mb.BoxDataToIntArray(data.boxDataList);
-            if (boxArray != null && boxArray.Length >= 3)
-                Debug.Log($"TruckReceiver: Absorbed pallet box counts A:{boxArray[0]} B:{boxArray[1]} C:{boxArray[2]}");
-            else
-                Debug.Log("TruckReceiver: Absorbed pallet box counts: null or unexpected length");
-
             // update the mission UI with the new counts
             SFXController.Instance.PlayClip(SFXController.Instance.palletRecieved);
             mb.updateMissionQuotaUI(missionId, boxArray);

@@ -146,7 +146,6 @@ public class ForkliftAudioController : MonoBehaviour
     {
         PlayForkLiftSound();
         forkLiftClip.pitch = -1f;
-        Debug.Log(forkLiftClip.pitch);
     }
 
     /// <summary>
@@ -159,7 +158,6 @@ public class ForkliftAudioController : MonoBehaviour
         {
             forkLiftClip.Stop();
             forkLiftClip.pitch = 1f;
-            Debug.Log("Stopped: " + forkLiftClip.pitch);
         }
     }
 

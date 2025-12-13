@@ -21,6 +21,7 @@ public class MissionDisplayController : MonoBehaviour
     
     // UI element that appears when the truck is ready to receive pallets
     public GameObject receiveDisplay;
+    public GameObject closeDoorDisplay;
 
     // Cached mission data for the currently displayed mission
     private MissionData missionData;
@@ -39,11 +40,11 @@ public class MissionDisplayController : MonoBehaviour
     /// <param name="truck">The truck GameObject containing TruckReceiver component with mission info</param>
     public void SetMissionTruck(GameObject truck)
     {
+        orderNumber.SetActive(true);
         missionTruck = truck;
         
         // Retrieve mission data using the truck's mission ID
         missionData = missionManager.GetComponent<MissionBehavior>().getMissionWithMissionID(truck.GetComponent<TruckReceiver>().missionId);
-        //Debug.Log("Mission truck set to: " + truck.GetComponent<TruckReceiver>().missionId + " Expected pallets: " + missionData.MissionQuantities[0] + ", " + missionData.MissionQuantities[1] + ", " + missionData.MissionQuantities[2]);
 
         // Get the truck receiver component and build order number text
         var receiver = missionTruck.GetComponent<TruckReceiver>();
@@ -97,7 +98,6 @@ public class MissionDisplayController : MonoBehaviour
                     }
                 }
 
-                Debug.LogWarning("Product requirement GameObject '" + reqGO.name + "' has no supported text component.");
             }
         }
 
@@ -113,7 +113,12 @@ public class MissionDisplayController : MonoBehaviour
             }
         }
 
+<<<<<<< HEAD
         Debug.LogWarning("OrderNumber has no supported text component (UnityEngine.UI.Text or TextMeshProUGUI).");
+=======
+
+
+>>>>>>> 63de0e21a8ff66ceb7fdc9ebe55d94d4da0ee360
     }
 
     /// <summary>
@@ -121,13 +126,24 @@ public class MissionDisplayController : MonoBehaviour
     /// </summary>
     /// <param name="truck">The truck GameObject ready to receive pallets</param>
     public void SetRecieveTruck(GameObject truck) {
+        orderNumber.SetActive(false);
         receiveDisplay.SetActive(true);
     }
 
+<<<<<<< HEAD
     /// <summary>
     /// Clears the mission truck reference and resets all UI displays to default state.
     /// Hides product requirements and receive display.
     /// </summary>
+=======
+    public void SetCloseDoorDisplay() {
+        orderNumber.SetActive(false);
+        closeDoorDisplay.SetActive(true);
+        receiveDisplay.SetActive(false);
+    }
+
+
+>>>>>>> 63de0e21a8ff66ceb7fdc9ebe55d94d4da0ee360
     public void ClearMissionTruck()
     {
         // Clear the truck reference
@@ -151,6 +167,7 @@ public class MissionDisplayController : MonoBehaviour
         
         // Hide the receive display
         receiveDisplay.SetActive(false);
+        closeDoorDisplay.SetActive(false);
     }
 
     // Update is called once per frame

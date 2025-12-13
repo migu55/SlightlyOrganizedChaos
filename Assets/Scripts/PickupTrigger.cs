@@ -18,8 +18,6 @@ public class PickupTrigger : MonoBehaviour
         // Auto-find the pickup controller on parent if not set
         if (pickupController == null)
             pickupController = GetComponentInParent<ForkliftPickup>();
-
-        Debug.Log(pickupController);
     }
 
     /// <summary>
@@ -29,8 +27,11 @@ public class PickupTrigger : MonoBehaviour
     /// <param name="other">The collider that entered the trigger</param>
     private void OnTriggerEnter(Collider other)
     {
+<<<<<<< HEAD
         Debug.Log("Pallet in Trigger");
         // Forward to pickup controller using null-conditional operator
+=======
+>>>>>>> 63de0e21a8ff66ceb7fdc9ebe55d94d4da0ee360
         pickupController?.OnTriggerEnterFork(other);
     }
 

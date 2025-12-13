@@ -27,12 +27,15 @@ public class ProductOrderingMenu : MonoBehaviour
     private TextMeshProUGUI order;
     [SerializeField]
     private TextMeshProUGUI pricing;
+    [SerializeField]
+    private NoahOrderHandlerTrigger menuButton;
 
     private Box boxToOrder;
     private TruckSpawnerManager spawner;
     // Persistent basket so player can add multiple types/quantities before placing the order
     private List<BoxData> orderBasket = new List<BoxData>();
     private int totalPrice;
+    private string[] names = { "Apple", "Blueberry", "Melon"};
 
     void Start()
     {
@@ -43,6 +46,8 @@ public class ProductOrderingMenu : MonoBehaviour
         boxToOrder = GameObject.FindGameObjectWithTag("BoxToOrder").GetComponent<Box>();
         UpdateBoxType(boxTypes[0].typeOfBox);
         UpdateBoxCount(1);
+
+
     }
 
     void Update()
@@ -51,6 +56,21 @@ public class ProductOrderingMenu : MonoBehaviour
         {
             spawner = GameObject.FindGameObjectWithTag("TruckSpawnHolder").GetComponent<TruckSpawnerManager>();
         }    
+    }
+
+    public string ConvertIndexToName(string letter)
+    {
+        switch (letter)
+        {
+            case "A":
+                return names[0];
+            case "B":
+                return names[1];
+            case "C":
+                return names[2];
+            default:
+                return names[0];
+        }
     }
 
     public void EnableMenu()
@@ -80,10 +100,10 @@ public class ProductOrderingMenu : MonoBehaviour
     {
         for (int i = 0; i < boxTypes.Count; i++)
         {
-            buttonsText[i].text = "Box " + boxTypes[i].typeOfBox + "\nPrice: $" + prices[i];
+            buttonsText[i].text = "Box o' " + names[i] + "\nPrice: $ " + prices[i];
         }
-        label.text = "Select Box Type:\n" + boxToOrder.typeOfBox;
-        order.text = "Current order:\n";
+        label.text = "Select Box Type:\n" + ConvertIndexToName(boxToOrder.typeOfBox);
+        order.text = "Current Order";
         foreach (Box b in boxTypes)
         {
             int count = 0;
@@ -91,15 +111,16 @@ public class ProductOrderingMenu : MonoBehaviour
             {
                 if (d.typeOfBox == b.typeOfBox) count++;
             }
-            order.text += $"{count}x {b.typeOfBox}, ";
+            order.text += $"\n{count}x {ConvertIndexToName(b.typeOfBox)}";
         }
-        pricing.text = $"Total Price: {totalPrice}";
+        pricing.text = $"Total Price\n$ {totalPrice}";
     }
 
     public void UpdateBoxType(string newBoxType)
     {
         foreach (Box box in boxTypes)
         {
+
             if (box.typeOfBox == newBoxType)
             {
                 boxToOrder.typeOfBox = newBoxType;
@@ -141,7 +162,12 @@ public class ProductOrderingMenu : MonoBehaviour
             totalPrice += prices[index];
         }
         UpdateText();
-        Debug.Log($"ProductOrderingMenu.AddToOrder: Added {count} x '{boxToOrder.typeOfBox}' to basket (total={orderBasket.Count}).");
+    }
+
+    public void ClearOrder()
+    {
+        orderBasket.Clear();
+        UpdateText();
     }
 
     public void PlaceOrder()
@@ -171,14 +197,20 @@ public class ProductOrderingMenu : MonoBehaviour
             for (int i = 0; i < count; i++) boxesToSend.Add(new BoxData() { typeOfBox = boxToOrder.typeOfBox });
         }
 
-        Debug.Log($"ProductOrderingMenu.PlaceOrder: Sending {boxesToSend.Count} boxes to spawner. (basketBeforeClear={ (orderBasket==null?0:orderBasket.Count) })");
         // use diagnostic entry to get extra logging from the spawner
         spawner.spawnTruck_Diagnostic(-1, boxesToSend, true);
 
         // Clear the persistent basket after sending, and subtract price from budget.
         orderBasket.Clear();
         GameStats.Instance.gameBalance -= totalPrice; totalPrice = 0;
+        UpdateText();
+        foreach (GameObject p in menuButton.playersInArea)
+        {
+            if (p.GetComponent<NoahOrderHandlerPlayer>().isMenuOpen)
+            {
+                menuButton.OpenOrCloseMenu(p);
+            }
+        }
         SFXController.Instance.PlayClip(SFXController.Instance.orderPlaced);
-        Debug.Log("ProductOrderingMenu.PlaceOrder: Cleared order basket after sending.");
     }
 }

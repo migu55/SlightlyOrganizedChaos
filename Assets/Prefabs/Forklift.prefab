@@ -544,7 +544,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   triggered: 0
-  player: {fileID: 8560633046323944863, guid: 583c1b6531b6b4c8ab66a4a0301d49c2, type: 3}
+  player:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!114 &4609596982566900336
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -572,6 +575,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotateSpeed: 1
+  lowSpeedBoost: 4
+  boostEndSpeed: 3
   audioController: {fileID: 6880003529349598990}
   cameraDistance: 20
 --- !u!1 &5061242469012373245
@@ -837,7 +842,7 @@ Transform:
   m_GameObject: {fileID: 5747396343648215675}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 4.33, z: -2.99}
+  m_LocalPosition: {x: 0.08, y: 0.54, z: -3.07}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

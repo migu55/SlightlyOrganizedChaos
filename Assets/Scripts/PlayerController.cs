@@ -89,7 +89,6 @@ public class PlayerController : MonoBehaviour
         rayStart = transform.Find("RayStart")?.gameObject;
         if (rayStart == null)
         {
-            Debug.LogWarning("RayStart child not found; using player GameObject as fallback.");
             rayStart = gameObject;
         }
     }
@@ -188,7 +187,6 @@ public class PlayerController : MonoBehaviour
     /// <param name="collision">Collision data</param>
     public void OnCollisionEnter(Collision collision) {
         if(collision.gameObject.CompareTag("Pallet")) {
-            Debug.Log("Collided with pallet");
             Rigidbody palletRb = collision.gameObject.GetComponent<Rigidbody>();
             palletRb.isKinematic = true;
         }
@@ -200,7 +198,6 @@ public class PlayerController : MonoBehaviour
     /// <param name="collision">Collision data</param>
     public void OnCollisionExit(Collision collision) {
         if(collision.gameObject.CompareTag("Pallet")) {
-            Debug.Log("Collision exit with pallet");
             Rigidbody palletRb = collision.gameObject.GetComponent<Rigidbody>();
             palletRb.isKinematic = false;
         }

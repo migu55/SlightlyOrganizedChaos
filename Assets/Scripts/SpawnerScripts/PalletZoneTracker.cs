@@ -22,7 +22,6 @@ public class PalletZoneTracker : MonoBehaviour
 
     private void Start()
     {
-        Debug.Log($"PalletZoneTracker started: zoneA={(zoneA!=null?zoneA.name:"null")}, zoneB={(zoneB!=null?zoneB.name:"null")}, available={(availablePallets==null?0:availablePallets.Count)}");
         if (zoneA != null)
         {
             ZoneAbsorber a = zoneA.GetComponent<ZoneAbsorber>(); if (a != null) a.enabled = false;
@@ -59,7 +58,6 @@ public class PalletZoneTracker : MonoBehaviour
         if (palletsToAdd == null || palletsToAdd.Count == 0) return;
         if (availablePallets == null) availablePallets = new List<PalletData>();
         availablePallets.AddRange(palletsToAdd);
-        Debug.Log($"PalletZoneTracker: Added {palletsToAdd.Count} pallets (total available={availablePallets.Count})");
     }
 
     // ------------------------------------------------------------------
@@ -90,7 +88,6 @@ public class PalletZoneTracker : MonoBehaviour
         {
             zoneList.Add(palletObj); // immediately mark zone as occupied
             if (zone == zoneA) lastSpawnA = now; else if (zone == zoneB) lastSpawnB = now;
-            Debug.Log($"PalletZoneTracker: Spawned pallet into '{(zone!=null?zone.name:"null")}', remaining={availablePallets.Count}");
         }
         else
         {
@@ -109,7 +106,6 @@ public class PalletZoneTracker : MonoBehaviour
 
         GameObject obj = Instantiate(palletPrefab, spawnPos, Quaternion.Euler(0, 90, 0));
         try { obj.tag = "Pallet"; } catch { }
-        obj.layer = LayerMask.NameToLayer("Pallet");
 
         Pallet p = obj.GetComponent<Pallet>();
         if (p == null) p = obj.AddComponent<Pallet>();

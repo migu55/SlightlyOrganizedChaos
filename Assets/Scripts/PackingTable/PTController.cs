@@ -43,17 +43,15 @@ public class PTController : MonoBehaviour
             BoxData box = new BoxData();
             box.typeOfBox = b.typeOfBox;
             palletData.palletBoxes.Add(box);
-            //for later: update prefab visually
-            currentPallet.GetComponent<Pallet>().FillEmptyZonesWithBoxes();
+            currentPallet.GetComponent<Pallet>().FillEmptyZonesWithBoxes(); //fill pallet visually
+            SFXController.Instance.PlayClip(SFXController.Instance.boxAbsorbed, true);
         }
-        else
+        else //pallet full, launch box
         {
             DetermineBoxType(b.typeOfBox);
-            
-            
 
             Vector3 spawningVector = Vector3.up * (boxEndpoint.transform.localScale.y + currentBoxType.transform.localScale.y) / 2f;
-            Vector3 coreOffset = new Vector3(-1, 5, 0);
+            Vector3 coreOffset = new Vector3(-1, 7, 0);
 
 
             GameObject spawnedBox = Instantiate(currentBoxType, boxEndpoint.transform.position
@@ -70,7 +68,7 @@ public class PTController : MonoBehaviour
             {
                 Vector3 launchDirection = new Vector3(-1, 0.5f, 0).normalized;
 
-                rb.AddForce(launchDirection * 50f, ForceMode.Impulse);
+                rb.AddForce(launchDirection * 40f, ForceMode.Impulse);
                 rb.AddForce(Vector3.up * 3f, ForceMode.Impulse);
 
                 Vector3 randomTorque = new Vector3(
@@ -81,10 +79,7 @@ public class PTController : MonoBehaviour
 
                 rb.AddTorque(randomTorque, ForceMode.Impulse);
             }
-
             SFXController.Instance.PlayClip(SFXController.Instance.boxLaunch);
-
-            // for later: play error noise? show error feedback?
             currentPallet.GetComponent<Pallet>().FillEmptyZonesWithBoxes();
         }
         StartCoroutine(DelayBoxProcessing());
@@ -105,13 +100,12 @@ public class PTController : MonoBehaviour
                 currentBoxType = boxPrefabC;
                 break;
             default:
-                Debug.Log("Incorrect Type Detected: Swapping from " + type + " to A.");
                 currentBoxType = boxPrefabA;
                 break;
         }
     }
 
-    public void UnloadBoxFromPallet()
+    public void UnloadBoxFromPallet() //take box off pallet
     {
         if (!currentPallet || !palletData || flag) return;
 
@@ -120,9 +114,9 @@ public class PTController : MonoBehaviour
         BoxData boxToSpawn = palletData.palletBoxes[0];
         DetermineBoxType(boxToSpawn.typeOfBox);
         palletData.palletBoxes.RemoveAt(0);
+        Vector3 offset = new Vector3(0, 0, -0.5f);
         
-        GameObject spawnedBox = Instantiate(currentBoxType, boxEndpoint.transform.position 
-            + Vector3.up * (boxEndpoint.transform.localScale.y + currentBoxType.transform.localScale.y) / 2f, Quaternion.identity); //spawn box at trigger
+        GameObject spawnedBox = Instantiate(currentBoxType, boxEndpoint.transform.position + offset, Quaternion.identity); //spawn box at trigger
         Box spawningBoxData = spawnedBox.GetComponent<Box>();
         if (spawningBoxData == null)
         {
@@ -130,16 +124,16 @@ public class PTController : MonoBehaviour
         }
 
         spawningBoxData.typeOfBox = boxToSpawn.typeOfBox;
+        SFXController.Instance.PlayClip(SFXController.Instance.boxSpawned, true);
 
         if (palletData.palletBoxes.Count <= 0)
         {
             Destroy(currentPallet);
             RemovePallet();
+            SFXController.Instance.PlayClip(SFXController.Instance.palletDestroyed);
         } else
         {
-            Debug.Log("Calling Delete Box");
             palletData.deleteBoxFromZone();
-
             StartCoroutine(DelayBoxProcessing()); //delays so all of the boxes dont immediately expel themselves from the pallet
         }
 
@@ -159,6 +153,7 @@ public class PTController : MonoBehaviour
             Quaternion.identity);
         palletData = currentPallet.GetComponent<Pallet>();
         hasPallet = true;
+        SFXController.Instance.PlayClip(SFXController.Instance.palletSpawned);
     }
 
     public void LoadPallet(GameObject pallet)

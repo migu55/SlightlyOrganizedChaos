@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,6 +33,10 @@ public class RoundGameToResults : MonoBehaviour
     private DoorFail doorFailScript;
     private TruckSpawnerManager truckSpawnerManagerScript;
 
+    public GameObject prefabA, prefabB, prefabC;
+    public GameObject leftBox, rightBox;
+    public Vector3 leftR, rightR;
+
     private bool inputDetected = true;
 
     private void Awake()
@@ -39,6 +44,7 @@ public class RoundGameToResults : MonoBehaviour
         whiteScreen = whiteScreenParent.GetComponent<Image>();
         clockInHandler = clockInGO.GetComponent<ClockInHandler>();
         rst = roundStatusText.transform.GetChild(0).gameObject.GetComponent<TextMeshProUGUI>();
+        StartCoroutine(RotationManager());
     }
 
     public void TransitionToResults()
@@ -48,37 +54,57 @@ public class RoundGameToResults : MonoBehaviour
 
     IEnumerator TransitionToResultsCoroutine()
     {
-        roundStatusText.SetActive(true);
-        rst.text = "Round\nOver!";
-        //SFX.Play(Whistle)
-        MusicManager.Instance.StopMusic();
-        List<MountForklift> forklifts = FindObjectsOfType<MountForklift>().ToList();
+        roundStatusText.SetActive(true);                                                //show round status text
+        rst.text = "Round\nOver!";                                                      //set text
+        MusicManager.Instance.StopMusic();                                              //stop music
+        List<MountForklift> forklifts = FindObjectsOfType<MountForklift>().ToList();    //dismount all forklifts
         foreach (MountForklift f in forklifts)
         {
             f.Dismount();
         }
-        List<GameObject> players = FindObjectsOfType<PlayerController>().Select(x => x.gameObject).ToList();
-        for (int i = 0; i < players.Count; i++)
+        List<GameObject> players = FindObjectsOfType<PlayerController>()
+            .Select(x => x.gameObject).ToList();
+        for (int i = 0; i < players.Count; i++)                                         //disable all player input
         {
             players[i].GetComponent<PlayerController>().enabled = false;
         }
-        statusBar.SetActive(false);
+        statusBar.SetActive(false);                                                     //hide bottom bar
         yield return new WaitForSeconds(1);
         //whiteScreenParent.SetActive(true);
-        SetAlpha(0);
-        yield return StartCoroutine(FadeScreen(true));
-        roundStatusText.SetActive(false);
-        roundResultsCanvas.SetActive(true);
-        roundResultsCamera.SetActive(true);
-        nextRoundText.SetActive(false);
-        for (int i = 0; i < players.Count; i++)
+        SetAlpha(0);                                                                    //set fade clear
+        yield return StartCoroutine(FadeScreen(true));                                  //fade to white
+        SpawnBoxes();                                                                   //spawn round screen boxes
+        roundStatusText.SetActive(false);                                               //hide round status
+        roundResultsCanvas.SetActive(true);                                             //show stats
+        roundResultsCamera.SetActive(true);                                             //swap camera
+        nextRoundText.SetActive(false);                                                 //hide move to game text
+        for (int i = 0; i < players.Count; i++)                                         //move players to breakroom
         {
             players[i].transform.position = new(55 + (i * 5), 1, -10);
         }
-        yield return StartCoroutine(FadeScreen(false));
-        yield return new WaitForSeconds(1);
+        yield return StartCoroutine(FadeScreen(false));                                 //unfade screen
+        yield return new WaitForSeconds(1);                                             //wait befor displaying text
         nextRoundText.SetActive(true);
-        inputDetected = false;
+        inputDetected = false;                                                          //set bool to detect button pressed to game
+    }
+
+    void SpawnBoxes()
+    {
+        GameObject[] boxes = { prefabA, prefabB, prefabC };
+        int random = UnityEngine.Random.Range(0, 2);
+        int random2 = UnityEngine.Random.Range(0, 2);
+
+        leftBox = Instantiate(boxes[random], new Vector3(-12.5f, -116, -1), Quaternion.identity);
+        rightBox = Instantiate(boxes[random2], new Vector3(12.5f, -116, -1), Quaternion.identity);
+
+        leftBox.GetComponent<Rigidbody>().isKinematic = true;
+        rightBox.GetComponent<Rigidbody>().isKinematic = true;
+    }
+
+    void DestroyBoxes()
+    {
+        Destroy(leftBox);
+        Destroy(rightBox);
     }
 
     void SetAlpha(int alpha)
@@ -117,31 +143,39 @@ public class RoundGameToResults : MonoBehaviour
     {
         yield return StartCoroutine(FadeScreen(true));
 
-        if (GameStats.Instance.gameBalance < GameStats.Instance.gameQuota)
+        if (GameStats.Instance.gameBalance < GameStats.Instance.gameQuota) //failed quota
         {
+            GameStats.Instance.inRoundScreen = false;
+            GameStats.Instance.gameStarted = false;
+            MusicManager.Instance.PlayMusic(MusicManager.Instance.menuMusic);
             SceneManager.LoadScene("MainMenu");
         }
 
+        DestroyBoxes();
+
+        //Setup next round
         GameStats.Instance.gamePreviousRoundBalance = GameStats.Instance.gameBalance;
         GameStats.Instance.gameTime = 360;
         GameStats.Instance.gameRound++;
 
-        GameStats.Instance.gameQuota = GameStats.Instance.gameQuota + (int) (1500 * (1 * (0.5 * GameStats.Instance.gameRound))); //needs testing
+        GameStats.Instance.gameQuota = GameStats.Instance.gameQuota 
+            + (int) (1500 * (1 * (0.5 * GameStats.Instance.gameRound)));
         GameStats.Instance.roundMissionFails = 0;
         GameStats.Instance.roundMissionPasses = 0;
         GameStats.Instance.roundNumMissions = 0;
-        List<GameObject> players = FindObjectsOfType<PlayerController>().Select(x => x.gameObject).ToList();
-        clockInHandler.UnreadyAll();
-        clockInHandler.tutorialEnabled = true;
+        List<GameObject> players = FindObjectsOfType<PlayerController>()                    //grab players
+            .Select(x => x.gameObject).ToList();
+        clockInHandler.UnreadyAll();                                                        //set all players to unready
+        clockInHandler.tutorialEnabled = true;                                              //toggle tutorial for clock in
         for (int i = 0; i < players.Count; i++)
         {
-            players[i].GetComponent<PlayerController>().enabled = true;
+            players[i].GetComponent<PlayerController>().enabled = true;                     //enable player movement
         }
-        MusicManager.Instance.PlayMusic(MusicManager.Instance.preroundMusic);
-        roundResultsCanvas.SetActive(false);
+        MusicManager.Instance.PlayMusic(MusicManager.Instance.preroundMusic);               //swap music
+        roundResultsCanvas.SetActive(false);                                                //disable results screen and camera
         roundResultsCamera.SetActive(false);
-        statusBar.SetActive(true);
-        yield return StartCoroutine(FadeScreen(false));
+        statusBar.SetActive(true);                                                          //enable bottom bar
+        yield return StartCoroutine(FadeScreen(false));                                     //fade in
         GameStats.Instance.inRoundScreen = false;
         yield return null;
     }
@@ -168,10 +202,10 @@ public class RoundGameToResults : MonoBehaviour
         doorFailScript = FindObjectOfType<DoorFail>();
         doorFailScript.CloseEverything();
         
-
+        //Setup
         GameStats.Instance.gameStarted = true;
         GameStats.Instance.gamePreviousRoundBalance = 500;
-        GameStats.Instance.gameTime = 360;
+        GameStats.Instance.gameTime = 390;
         GameStats.Instance.gameRound++;
         GameStats.Instance.gameBalance = 500;
         GameStats.Instance.gameQuota = 1500;
@@ -226,6 +260,48 @@ public class RoundGameToResults : MonoBehaviour
         if (GameStats.Instance.gameRound == 0 && GameStats.Instance.allPlayersReady && !GameStats.Instance.gameStarted)
         {
             FirstRound();
+        }
+    }
+
+    IEnumerator RotationManager()
+    {
+        while (true)
+        {
+            // Wait until BOTH boxes are available
+            yield return new WaitUntil(() => leftBox != null && rightBox != null);
+
+            // Run smooth rotation until one is destroyed
+            yield return StartCoroutine(SmoothRotationsLoop());
+        }
+    }
+
+    IEnumerator SmoothRotationsLoop()
+    {
+        while (leftBox != null && rightBox != null)
+        {
+            Quaternion leftStart = leftBox.transform.rotation;
+            Quaternion rightStart = rightBox.transform.rotation;
+
+            Quaternion leftTarget = UnityEngine.Random.rotation;
+            Quaternion rightTarget = UnityEngine.Random.rotation;
+
+            float duration = 1.5f;
+            float t = 0f;
+
+            while (t < duration)
+            {
+                // Stop immediately if either box was destroyed
+                if (leftBox == null || rightBox == null)
+                    yield break;
+
+                t += Time.deltaTime;
+                float progress = t / duration;
+
+                leftBox.transform.rotation = Quaternion.Slerp(leftStart, leftTarget, progress);
+                rightBox.transform.rotation = Quaternion.Slerp(rightStart, rightTarget, progress);
+
+                yield return null;
+            }
         }
     }
 }

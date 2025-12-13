@@ -15,6 +15,8 @@ public class NoahOrderHandlerTrigger : MonoBehaviour, Interactable
     private UIController uiController;
     [SerializeField]
     private Camera menuCamera;
+    [SerializeField]
+    private ClockInHandler readySystem;
     private AimConstraint pointer;
     private ProductOrderingMenu menu;
     private InputActionMap uiControls;
@@ -44,20 +46,28 @@ public class NoahOrderHandlerTrigger : MonoBehaviour, Interactable
     {
         if (!playerObj.TryGetComponent<NoahOrderHandlerPlayer>(out var orderHandler))
         {
-            Debug.LogWarning("Failed to find player order handler when interacting with laptop");
             return;
         }
 
         var input = playerObj.GetComponent<PlayerInput>();
         var bridge = playerObj.GetComponent<InputBridge>();
 
-        if (!orderHandler.isMenuOpen)
+        bool anyOpen = false;
+        foreach (GameObject p in playersInArea)
+        {
+            if (p.GetComponent<NoahOrderHandlerPlayer>().isMenuOpen)
+            {
+                anyOpen = true;
+            }
+        }
+
+        if (!orderHandler.isMenuOpen && !anyOpen && (readySystem.firstTutorial || !readySystem.tutorialEnabled))
         {
             OpenMenu(playerObj);
             orderHandler.isMenuOpen = true;
             bridge.SetController(uiController);
             input.SwitchCurrentActionMap("UI");
-        } else
+        } else if (readySystem.firstTutorial || !readySystem.tutorialEnabled)
         {
             CloseMenu(playerObj);
             orderHandler.isMenuOpen = false;
