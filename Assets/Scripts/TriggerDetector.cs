@@ -10,14 +10,8 @@ public class TriggerDetector : MonoBehaviour
 {
     // Indicates whether a player is currently in the trigger zone
     public bool triggered = false;
-<<<<<<< HEAD
-    
-    // Reference to the player GameObject currently in the trigger (null if none)
-    public GameObject player;
-    
-=======
+
     public List<GameObject> player;
->>>>>>> 63de0e21a8ff66ceb7fdc9ebe55d94d4da0ee360
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -31,12 +25,7 @@ public class TriggerDetector : MonoBehaviour
     /// <param name="other">The collider that entered the trigger</param>
     private void OnTriggerEnter(Collider other)
     {
-<<<<<<< HEAD
-        // Only respond if not already triggered and the entering object is a player
-        if (!triggered && other.gameObject.tag == "Player")
-=======
         if (other.gameObject.tag == "Player")
->>>>>>> 63de0e21a8ff66ceb7fdc9ebe55d94d4da0ee360
         {
                 triggered = true;
                 if(!player.Contains(other.gameObject)) {

@@ -90,13 +90,9 @@ public class InteractionController : MonoBehaviour
 
         var playerObj = playerController.gameObject;
 
-<<<<<<< HEAD
-        // Only execute interaction if this player is in range (detector triggered) and is the detected player
-        if (detector.triggered && detector.player == playerObj)
-=======
+
         // Only run if the detector is triggered
         if (detector.triggered && detector.player.Contains(playerObj))
->>>>>>> 63de0e21a8ff66ceb7fdc9ebe55d94d4da0ee360
         {
             // Try Interactable interface first (used by forklift, etc.)
             var interactable = GetComponent<Interactable>();

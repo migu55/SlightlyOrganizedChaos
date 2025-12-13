@@ -140,13 +140,9 @@ public class MountForklift : MonoBehaviour, Interactable
         // Play engine stop audio
         audioController.StopEngineIdle();
         audioController.PlayEngineStop();
-<<<<<<< HEAD
-        
-        // Switch camera back to player view
-        Debug.Log("Dismounting");
-=======
+
         //enabling the player camera and disabling the forklift camera
->>>>>>> 63de0e21a8ff66ceb7fdc9ebe55d94d4da0ee360
+
         playerCamera.enabled = true;
         forkliftCamera.enabled = false;
         

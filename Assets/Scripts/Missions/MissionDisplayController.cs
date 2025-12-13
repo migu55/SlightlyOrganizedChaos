@@ -112,13 +112,6 @@ public class MissionDisplayController : MonoBehaviour
                 return;
             }
         }
-
-<<<<<<< HEAD
-        Debug.LogWarning("OrderNumber has no supported text component (UnityEngine.UI.Text or TextMeshProUGUI).");
-=======
-
-
->>>>>>> 63de0e21a8ff66ceb7fdc9ebe55d94d4da0ee360
     }
 
     /// <summary>
@@ -130,20 +123,12 @@ public class MissionDisplayController : MonoBehaviour
         receiveDisplay.SetActive(true);
     }
 
-<<<<<<< HEAD
-    /// <summary>
-    /// Clears the mission truck reference and resets all UI displays to default state.
-    /// Hides product requirements and receive display.
-    /// </summary>
-=======
     public void SetCloseDoorDisplay() {
         orderNumber.SetActive(false);
         closeDoorDisplay.SetActive(true);
         receiveDisplay.SetActive(false);
     }
 
-
->>>>>>> 63de0e21a8ff66ceb7fdc9ebe55d94d4da0ee360
     public void ClearMissionTruck()
     {
         // Clear the truck reference

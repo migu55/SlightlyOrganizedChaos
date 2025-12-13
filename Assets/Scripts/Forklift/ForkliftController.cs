@@ -235,15 +235,8 @@ public class ForkliftController : MonoBehaviour
             rearRightWheel.transform.localRotation = Quaternion.Euler(rearRightSpinAngle, rearRightSteerAngle, 0f);
         }
 
-<<<<<<< HEAD
-        // === PHYSICS-BASED MOVEMENT ===
-        // Apply instant velocity change for responsive forklift movement
-        rb.AddForce(transform.TransformDirection(moveDir), ForceMode.VelocityChange);
-        
-        // Modulate engine pitch based on throttle input (simulates RPM)
-=======
+
         rb.AddForce(transform.TransformDirection(boostedMove), ForceMode.VelocityChange);
->>>>>>> 63de0e21a8ff66ceb7fdc9ebe55d94d4da0ee360
         audioController.ChangeEngineIdlePitch(0.5f + Mathf.Abs(movement) * 0.5f);
 
         // Calculate local forward velocity for direction-based steering
@@ -273,12 +266,10 @@ public class ForkliftController : MonoBehaviour
             Vector3 newPosition = forks.transform.localPosition + lifting;
             newPosition.y = Mathf.Clamp(newPosition.y, 2.2f, 8f);
             forks.transform.localPosition = newPosition;
-<<<<<<< HEAD
             Debug.Log(lifting);
             
             // Play hydraulic sound (forward or reverse pitch based on direction)
-=======
->>>>>>> 63de0e21a8ff66ceb7fdc9ebe55d94d4da0ee360
+
             if(lifting.y > 0)
             {
                 audioController.PlayForkLiftSound();

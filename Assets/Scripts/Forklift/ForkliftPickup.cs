@@ -58,12 +58,8 @@ public class ForkliftPickup : MonoBehaviour
         {
             // Add kinematic rigidbody to forks - moves with animation/script, not affected by physics
             forkRb = forkTransform.gameObject.AddComponent<Rigidbody>();
-<<<<<<< HEAD
-            forkRb.isKinematic = true;
-            Debug.Log("Added kinematic Rigidbody to forks");
-=======
+
             forkRb.isKinematic = true; // kinematic so it moves with script, not physics
->>>>>>> 63de0e21a8ff66ceb7fdc9ebe55d94d4da0ee360
         }
 
         // Create a ConfigurableJoint on the pallet GameObject
